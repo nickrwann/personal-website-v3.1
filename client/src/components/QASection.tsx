@@ -82,8 +82,7 @@ export function QASection() {
   };
 
   return (
-    <>
-      {/* Q&A conversation history */}
+    <div>
       <section className="mb-6" data-testid="section-qa">
         {userQuestion && (
           <div className="space-y-6">
@@ -111,27 +110,23 @@ export function QASection() {
         )}
       </section>
 
-      {/* Suggestion pills - only shown when no question asked */}
       {!userQuestion && (
         <div className="mb-4">
           <SuggestionPills onSuggestionClick={handleSuggestionClick} disabled={isAsking} />
         </div>
       )}
 
-      {/* Fixed input container - always at bottom on mobile */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-40">
-        <div className="max-w-3xl mx-auto px-4 py-3">
-          <ChatInput
-            onSend={handleSend}
-            onRefresh={() => {
-              setUserQuestion("");
-              setRawAnswer("");
-              setStreamedText("");
-            }}
-            disabled={isAsking}
-          />
-        </div>
+      <div className="mb-4">
+        <ChatInput
+          onSend={handleSend}
+          onRefresh={() => {
+            setUserQuestion("");
+            setRawAnswer("");
+            setStreamedText("");
+          }}
+          disabled={isAsking}
+        />
       </div>
-    </>
+    </div>
   );
 }

@@ -109,48 +109,44 @@ export default function Home() {
 
   return (
     <>
-      <div className="min-h-screen bg-background relative flex flex-col">
+      <div className="min-h-screen bg-background relative">
         <NWBadge />
         <div className="fixed top-4 right-4 z-50">
           <ThemeToggle />
         </div>
-        
-        {/* Main scrollable content area with padding for fixed input */}
-        <div className="flex-1 overflow-y-auto pb-32">
-          <div className="max-w-3xl mx-auto px-4 py-12">
-            <HeroSection />
-            
-            {/* Stream container for all content sections */}
-            <div 
-              id="stream-container" 
-              className="w-full mb-12" 
-              data-testid="container-stream"
-            >
-              <div className="space-y-12">
-                {streamedAbout && <AboutSection content={streamedAbout} />}
-                {visibleExperienceCount > 0 && (
-                  <ExperienceSection 
-                    experiences={visibleExperiences} 
-                    showTitle={true}
-                  />
-                )}
-              </div>
-              
-              {/* Keep the fantastic pulsing cursor during streaming */}
-              {isStreaming && (
-                <div className="flex items-center gap-2 mt-4 text-muted-foreground">
-                  <div className="w-1 h-4 bg-primary animate-pulse" />
-                </div>
+        <div className="max-w-3xl mx-auto px-4 py-12 pb-6">
+          <HeroSection />
+          
+          {/* Stream container for all content sections */}
+          <div 
+            id="stream-container" 
+            className="w-full mb-12" 
+            data-testid="container-stream"
+          >
+            <div className="space-y-12">
+              {streamedAbout && <AboutSection content={streamedAbout} />}
+              {visibleExperienceCount > 0 && (
+                <ExperienceSection 
+                  experiences={visibleExperiences} 
+                  showTitle={true}
+                />
               )}
             </div>
-
-            {/* Q&A responses section fades in after streaming completes */}
-            {!isStreaming && (
-              <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                <QASection />
+            
+            {/* Keep the fantastic pulsing cursor during streaming */}
+            {isStreaming && (
+              <div className="flex items-center gap-2 mt-4 text-muted-foreground">
+                <div className="w-1 h-4 bg-primary animate-pulse" />
               </div>
             )}
           </div>
+
+          {/* Q&A section fades in after streaming completes */}
+          {!isStreaming && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+              <QASection />
+            </div>
+          )}
         </div>
         
         {/* ChatGPT-style scroll-to-bottom button */}

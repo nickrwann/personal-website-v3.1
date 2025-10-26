@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { RefreshCw, Plus, Mic, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ const MAX_CHARS = 250;
 
 export function ChatInput({ onSend, onRefresh, disabled }: ChatInputProps) {
   const [input, setInput] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSend = () => {
     if (input.trim() && input.length <= MAX_CHARS && !disabled) {
@@ -26,6 +27,56 @@ export function ChatInput({ onSend, onRefresh, disabled }: ChatInputProps) {
       handleSend();
     }
   };
+
+  const handleFocus = () => {
+    // On mobile, ensure input scrolls into view above keyboard
+    // Multiple strategies for cross-browser compatibility
+    
+    // Strategy 1: Immediate scroll with delay for keyboard animation
+    setTimeout(() => {
+      if (inputRef.current) {
+        // Scroll with padding to ensure input is well above keyboard
+        const yOffset = -100; // Extra space above input
+        const element = inputRef.current;
+        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    }, 300);
+
+    // Strategy 2: Second attempt after keyboard is fully shown
+    setTimeout(() => {
+      if (inputRef.current && document.activeElement === inputRef.current) {
+        inputRef.current.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start',
+          inline: 'nearest'
+        });
+      }
+    }, 500);
+  };
+
+  // Handle viewport changes when keyboard appears (Visual Viewport API)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'visualViewport' in window) {
+      const handleViewportResize = () => {
+        // If input is focused and viewport height decreased (keyboard appeared)
+        if (document.activeElement === inputRef.current) {
+          setTimeout(() => {
+            if (inputRef.current) {
+              const yOffset = -80;
+              const element = inputRef.current;
+              const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+              window.scrollTo({ top: y, behavior: 'smooth' });
+            }
+          }, 100);
+        }
+      };
+
+      window.visualViewport?.addEventListener('resize', handleViewportResize);
+      return () => window.visualViewport?.removeEventListener('resize', handleViewportResize);
+    }
+  }, []);
 
   return (
     <div data-testid="container-chat-input">
@@ -55,6 +106,7 @@ export function ChatInput({ onSend, onRefresh, disabled }: ChatInputProps) {
 
           <div className="flex-1 relative">
             <Input
+              ref={inputRef}
               value={input}
               onChange={(e) => {
                 if (e.target.value.length <= MAX_CHARS) {
@@ -62,6 +114,7 @@ export function ChatInput({ onSend, onRefresh, disabled }: ChatInputProps) {
                 }
               }}
               onKeyPress={handleKeyPress}
+              onFocus={handleFocus}
               placeholder="Ask anything about Nick..."
               disabled={disabled}
               data-testid="input-question"
