@@ -13,7 +13,6 @@ export default function Home() {
   const [isStreaming, setIsStreaming] = useState(true);
   const [showScrollButton, setShowScrollButton] = useState(false);
   
-  const streamContainerRef = useRef<HTMLDivElement>(null);
   const hasStreamedRef = useRef(false);
   const checkScrollPositionRef = useRef<() => void>();
 
@@ -121,7 +120,6 @@ export default function Home() {
           {/* Stream container for all content sections */}
           <div 
             id="stream-container" 
-            ref={streamContainerRef}
             className="w-full mb-12" 
             data-testid="container-stream"
           >
