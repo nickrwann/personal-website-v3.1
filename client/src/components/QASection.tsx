@@ -23,7 +23,7 @@ export function QASection() {
     setIsStreaming(true);
     let index = 0;
     const charsPerInterval = 1; // 1 character at a time
-    const intervalMs = 50; // Human-readable speed: 50ms per character
+    const intervalMs = 25; // Human-readable speed: 25ms per character (40 chars/sec)
 
     const interval = setInterval(() => {
       if (index < text.length) {

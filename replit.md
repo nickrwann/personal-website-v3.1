@@ -25,7 +25,10 @@ Preferred communication style: Simple, everyday language.
 - Component path aliases configured for clean imports (`@/components`, `@/lib`, etc.)
 
 **Key Design Patterns**
-- **ChatGPT-Like Streaming**: Character-by-character content reveal with human-readable pacing (1 character every 50ms)
+- **ChatGPT-Like Streaming**: Character-by-character content reveal with human-readable pacing (1 character every 25ms, 40 chars/sec)
+  - About Me section streams character-by-character
+  - Experience descriptions stream character-by-character (one experience at a time)
+  - Q&A responses stream character-by-character
 - **No Auto-Scrolling**: Page stays at top during streaming - user controls all scrolling behavior
 - **Scroll-to-Bottom Button**: ChatGPT-style floating button (centered at bottom) with scroll event listener detection
   - Shows when content extends beyond viewport
@@ -39,7 +42,7 @@ Preferred communication style: Simple, everyday language.
   - Consistent cursor behavior across About section and Q&A responses
 - **Responsive Layout**: Mobile-first approach with adaptive subtitle (single line on desktop, 3 centered lines on mobile)
 - **Fixed Chrome Elements**: NW badge and theme toggle remain visible while scrolling
-- **Incremental Content Reveal**: About section streams first, then Experience items appear sequentially with fade-in animations
+- **Incremental Content Reveal**: About section streams first (character-by-character), then Experience items appear sequentially with character-by-character description streaming for each one
 
 **ChatGPT-Style Chat Interface**:
 - **In-Flow Input Bar**: Chat input positioned in page flow (not fixed) with clean one-container design
