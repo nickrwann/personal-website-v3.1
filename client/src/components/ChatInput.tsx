@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { RefreshCw, Plus, Mic, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,34 +9,45 @@ interface ChatInputProps {
   disabled?: boolean;
 }
 
+export interface ChatInputRef {
+  focus: () => void;
+}
+
 const MAX_CHARS = 250;
 
-export function ChatInput({ onSend, onRefresh, disabled }: ChatInputProps) {
-  const [input, setInput] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
+export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
+  ({ onSend, onRefresh, disabled }, ref) => {
+    const [input, setInput] = useState("");
+    const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleSend = () => {
-    if (input.trim() && input.length <= MAX_CHARS && !disabled) {
-      onSend(input.trim());
-      setInput("");
-    }
-  };
+    useImperativeHandle(ref, () => ({
+      focus: () => {
+        inputRef.current?.focus();
+      },
+    }));
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !disabled) {
-      handleSend();
-    }
-  };
+    const handleSend = () => {
+      if (input.trim() && input.length <= MAX_CHARS && !disabled) {
+        onSend(input.trim());
+        setInput("");
+      }
+    };
 
-  useEffect(() => {
-    if (!disabled && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [disabled]);
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" && !disabled) {
+        handleSend();
+      }
+    };
 
-  return (
-    <div data-testid="container-chat-input">
-      <div className="bg-card border border-card-border rounded-lg p-2.5">
+    useEffect(() => {
+      if (!disabled && inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, [disabled]);
+
+    return (
+      <div data-testid="container-chat-input">
+        <div className="bg-card border border-card-border rounded-lg p-2.5">
           <div className="flex items-center gap-2">
             <Button
               size="icon"
@@ -101,7 +112,10 @@ export function ChatInput({ onSend, onRefresh, disabled }: ChatInputProps) {
               <Send className="h-4 w-4" />
             </Button>
           </div>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
+);
+
+ChatInput.displayName = "ChatInput";
