@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { RefreshCw, Plus, Mic, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,8 +13,6 @@ const MAX_CHARS = 250;
 
 export function ChatInput({ onSend, onRefresh, disabled }: ChatInputProps) {
   const [input, setInput] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleSend = () => {
     if (input.trim() && input.length <= MAX_CHARS && !disabled) {
@@ -29,19 +27,8 @@ export function ChatInput({ onSend, onRefresh, disabled }: ChatInputProps) {
     }
   };
 
-  const handleFocus = () => {
-    // On mobile, scroll the input into view when focused
-    // Small delay to allow keyboard to appear first
-    setTimeout(() => {
-      containerRef.current?.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'end'
-      });
-    }, 300);
-  };
-
   return (
-    <div ref={containerRef} data-testid="container-chat-input">
+    <div data-testid="container-chat-input">
       <div className="bg-card border border-card-border rounded-lg p-2.5">
         <div className="flex items-center gap-2">
           <Button
@@ -68,7 +55,6 @@ export function ChatInput({ onSend, onRefresh, disabled }: ChatInputProps) {
 
           <div className="flex-1 relative">
             <Input
-              ref={inputRef}
               value={input}
               onChange={(e) => {
                 if (e.target.value.length <= MAX_CHARS) {
@@ -76,7 +62,6 @@ export function ChatInput({ onSend, onRefresh, disabled }: ChatInputProps) {
                 }
               }}
               onKeyPress={handleKeyPress}
-              onFocus={handleFocus}
               placeholder="Ask anything about Nick..."
               disabled={disabled}
               data-testid="input-question"
