@@ -20,32 +20,32 @@ export default function Home() {
   }, [streamedAbout, streamedExperiences, isStreaming]);
 
   useEffect(() => {
-    const streamContent = async () => {
-      const fullContent = aboutContent + "\n\n" + experiencesIntro;
-      let index = 0;
-      const charsPerInterval = 8;
-      const intervalMs = 30;
+    setStreamedAbout("");
+    setStreamedExperiences("");
+    setIsStreaming(true);
 
-      const interval = setInterval(() => {
-        if (index < aboutContent.length) {
-          setStreamedAbout(aboutContent.slice(0, index + charsPerInterval));
-          index += charsPerInterval;
-        } else if (index < fullContent.length) {
-          setStreamedAbout(aboutContent);
-          setStreamedExperiences(experiencesIntro.slice(0, index - aboutContent.length + charsPerInterval));
-          index += charsPerInterval;
-        } else {
-          clearInterval(interval);
-          setStreamedAbout(aboutContent);
-          setStreamedExperiences(experiencesIntro);
-          setIsStreaming(false);
-        }
-      }, intervalMs);
+    const fullContent = aboutContent + "\n\n" + experiencesIntro;
+    let index = 0;
+    const charsPerInterval = 5;
+    const intervalMs = 20;
 
-      return () => clearInterval(interval);
-    };
+    const interval = setInterval(() => {
+      if (index < aboutContent.length) {
+        setStreamedAbout(aboutContent.slice(0, index + charsPerInterval));
+        index += charsPerInterval;
+      } else if (index < fullContent.length) {
+        setStreamedAbout(aboutContent);
+        setStreamedExperiences(experiencesIntro.slice(0, index - aboutContent.length + charsPerInterval));
+        index += charsPerInterval;
+      } else {
+        clearInterval(interval);
+        setStreamedAbout(aboutContent);
+        setStreamedExperiences(experiencesIntro);
+        setIsStreaming(false);
+      }
+    }, intervalMs);
 
-    streamContent();
+    return () => clearInterval(interval);
   }, []);
 
   return (
