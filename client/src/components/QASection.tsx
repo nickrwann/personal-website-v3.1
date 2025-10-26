@@ -1,10 +1,10 @@
-import { useState, forwardRef } from "react";
+import { useState } from "react";
 import { TypingIndicator } from "./TypingIndicator";
 import { SuggestionPills } from "./SuggestionPills";
-import { ChatInput, ChatInputRef } from "./ChatInput";
+import { ChatInput } from "./ChatInput";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 
-export const QASection = forwardRef<ChatInputRef>((props, ref) => {
+export function QASection() {
   const [userQuestion, setUserQuestion] = useState("");
   const [assistantAnswer, setAssistantAnswer] = useState("");
   const [streamedContent, setStreamedContent] = useState("");
@@ -112,7 +112,6 @@ export const QASection = forwardRef<ChatInputRef>((props, ref) => {
 
       <div className="mb-12">
         <ChatInput
-          ref={ref}
           onSend={handleSend}
           onRefresh={() => {
             setUserQuestion("");
@@ -124,6 +123,4 @@ export const QASection = forwardRef<ChatInputRef>((props, ref) => {
       </div>
     </div>
   );
-});
-
-QASection.displayName = "QASection";
+}

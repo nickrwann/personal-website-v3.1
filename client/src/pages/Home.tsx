@@ -7,8 +7,6 @@ import { ExperienceSection } from "@/components/ExperienceSection";
 import { QASection } from "@/components/QASection";
 import { ScrollToBottomButton } from "@/components/ScrollToBottomButton";
 import { aboutContent, experiences } from "@/content/portfolio";
-import type { ChatInputRef } from "@/components/ChatInput";
-
 export default function Home() {
   const [streamedAbout, setStreamedAbout] = useState("");
   const [visibleExperienceCount, setVisibleExperienceCount] = useState(0);
@@ -16,26 +14,37 @@ export default function Home() {
   const [showScrollButton, setShowScrollButton] = useState(false);
   
   const streamContainerRef = useRef<HTMLDivElement>(null);
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const chatInputRef = useRef<ChatInputRef>(null);
   const hasStreamedRef = useRef(false);
+  const checkScrollPositionRef = useRef<() => void>();
 
-  // Watch sentinel element to show/hide scroll button
+  // Check if user is at bottom of page
   useEffect(() => {
-    if (!sentinelRef.current) return;
+    const checkScrollPosition = () => {
+      const scrollHeight = document.documentElement.scrollHeight;
+      const scrollTop = window.scrollY;
+      const clientHeight = window.innerHeight;
+      
+      // Show button when NOT at bottom (has more content below)
+      // Hide button when AT bottom (within 50px of bottom)
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 50;
+      setShowScrollButton(!isAtBottom);
+    };
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        // Show button when sentinel is NOT in view (content extends beyond viewport)
-        // Hide button when sentinel IS in view (at bottom)
-        setShowScrollButton(!entry.isIntersecting);
-      },
-      { threshold: 0.1 }
-    );
+    // Store in ref so streaming effects can call it
+    checkScrollPositionRef.current = checkScrollPosition;
 
-    observer.observe(sentinelRef.current);
+    // Check on mount
+    checkScrollPosition();
 
-    return () => observer.disconnect();
+    // Check on scroll
+    window.addEventListener('scroll', checkScrollPosition);
+    // Check on resize (viewport height change)
+    window.addEventListener('resize', checkScrollPosition);
+
+    return () => {
+      window.removeEventListener('scroll', checkScrollPosition);
+      window.removeEventListener('resize', checkScrollPosition);
+    };
   }, []);
 
   // ChatGPT-like streaming with natural pacing
@@ -58,10 +67,13 @@ export default function Home() {
         const newContent = aboutContent.slice(0, aboutIndex + charsToAdd);
         setStreamedAbout(newContent);
         aboutIndex += charsToAdd;
+        // Check scroll position as content grows
+        setTimeout(() => checkScrollPositionRef.current?.(), 0);
         timeoutId = setTimeout(streamAbout, getRandomDelay());
       } else {
         // About section complete, start showing experiences
         setStreamedAbout(aboutContent);
+        setTimeout(() => checkScrollPositionRef.current?.(), 0);
         timeoutId = setTimeout(streamExperiences, 300);
       }
     };
@@ -71,15 +83,14 @@ export default function Home() {
       if (experienceIndex < experiences.length) {
         experienceIndex++;
         setVisibleExperienceCount(experienceIndex);
+        // Check scroll position as experience items appear
+        setTimeout(() => checkScrollPositionRef.current?.(), 0);
         timeoutId = setTimeout(streamExperiences, 400);
       } else {
         // All content complete
         setIsStreaming(false);
-        
-        // Auto-focus chat input after streaming completes
-        setTimeout(() => {
-          chatInputRef.current?.focus();
-        }, 500);
+        // Final check after streaming completes
+        setTimeout(() => checkScrollPositionRef.current?.(), 0);
       }
     };
 
@@ -92,7 +103,7 @@ export default function Home() {
   }, []);
 
   const handleScrollToBottom = () => {
-    document.getElementById('stream-end')?.scrollIntoView({ behavior: 'smooth' });
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
   };
 
   const visibleExperiences = experiences.slice(0, visibleExperienceCount);
@@ -135,12 +146,9 @@ export default function Home() {
           {/* Q&A section fades in after streaming completes */}
           {!isStreaming && (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-              <QASection ref={chatInputRef} />
+              <QASection />
             </div>
           )}
-          
-          {/* Sentinel element for scroll button visibility detection */}
-          <div id="stream-end" ref={sentinelRef} />
         </div>
         
         {/* ChatGPT-style scroll-to-bottom button */}

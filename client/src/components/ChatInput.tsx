@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
+import { useState, useRef, forwardRef, useImperativeHandle } from "react";
 import { RefreshCw, Plus, Mic, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,12 +38,6 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(
         handleSend();
       }
     };
-
-    useEffect(() => {
-      if (!disabled && inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, [disabled]);
 
     return (
       <div data-testid="container-chat-input">
