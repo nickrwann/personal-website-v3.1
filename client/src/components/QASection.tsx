@@ -6,13 +6,39 @@ import { MarkdownRenderer } from "./MarkdownRenderer";
 
 export function QASection() {
   const [userQuestion, setUserQuestion] = useState("");
-  const [assistantAnswer, setAssistantAnswer] = useState("");
+  const [rawAnswer, setRawAnswer] = useState("");
+  const [streamedText, setStreamedText] = useState("");
+  const [isStreaming, setIsStreaming] = useState(false);
   const [isAsking, setIsAsking] = useState(false);
   const [showTyping, setShowTyping] = useState(false);
 
+  const streamText = (text: string) => {
+    setStreamedText("");
+    setIsStreaming(true);
+    let index = 0;
+    const charsPerInterval = 3;
+    const intervalMs = 20;
+
+    const interval = setInterval(() => {
+      if (index < text.length) {
+        const charsToAdd = Math.min(charsPerInterval, text.length - index);
+        setStreamedText(text.slice(0, index + charsToAdd));
+        index += charsToAdd;
+      } else {
+        clearInterval(interval);
+        setStreamedText(text);
+        setIsStreaming(false);
+        setIsAsking(false);
+      }
+    }, intervalMs);
+
+    return () => clearInterval(interval);
+  };
+
   const handleSend = async (message: string) => {
     setUserQuestion(message);
-    setAssistantAnswer("");
+    setRawAnswer("");
+    setStreamedText("");
     setIsAsking(true);
     setShowTyping(true);
 
@@ -39,19 +65,15 @@ export function QASection() {
       const data = await response.json();
       const answer = data.answer || "No response received.";
 
-      // Small delay for natural feel, then show the complete formatted response
-      setTimeout(() => {
-        setShowTyping(false);
-        setAssistantAnswer(answer);
-        setIsAsking(false);
-      }, 300);
+      setRawAnswer(answer);
+      setShowTyping(false);
+      streamText(answer);
     } catch (error) {
       console.error("Error asking question:", error);
-      setTimeout(() => {
-        setShowTyping(false);
-        setAssistantAnswer("Sorry, I encountered an error. Please try again.");
-        setIsAsking(false);
-      }, 300);
+      const errorMessage = "Sorry, I encountered an error. Please try again.";
+      setRawAnswer(errorMessage);
+      setShowTyping(false);
+      streamText(errorMessage);
     }
   };
 
@@ -72,9 +94,16 @@ export function QASection() {
 
             {showTyping && <TypingIndicator />}
             
-            {assistantAnswer && (
-              <div className="w-full overflow-x-auto animate-in fade-in slide-in-from-bottom-2 duration-300" data-testid="bubble-assistant">
-                <MarkdownRenderer content={assistantAnswer} />
+            {streamedText && (
+              <div className="w-full overflow-x-auto" data-testid="bubble-assistant">
+                {isStreaming ? (
+                  <div className="text-foreground leading-relaxed whitespace-pre-wrap">
+                    {streamedText}
+                    <span className="inline-block w-1 h-4 bg-primary animate-pulse ml-0.5 align-middle" />
+                  </div>
+                ) : (
+                  <MarkdownRenderer content={streamedText} />
+                )}
               </div>
             )}
           </div>
@@ -92,7 +121,8 @@ export function QASection() {
           onSend={handleSend}
           onRefresh={() => {
             setUserQuestion("");
-            setAssistantAnswer("");
+            setRawAnswer("");
+            setStreamedText("");
           }}
           disabled={isAsking}
         />
