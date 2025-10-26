@@ -84,12 +84,6 @@ export function QASection() {
   return (
     <div>
       <section className="mb-12" data-testid="section-qa">
-        <h2 className="text-2xl font-semibold text-foreground mb-6">Ask Me Anything</h2>
-        
-        {!userQuestion && (
-          <SuggestionPills onSuggestionClick={handleSuggestionClick} disabled={isAsking} />
-        )}
-
         {userQuestion && (
           <div className="space-y-6">
             <div className="flex justify-end" data-testid="bubble-user">
@@ -108,6 +102,12 @@ export function QASection() {
           </div>
         )}
       </section>
+
+      <div className="fixed bottom-20 left-0 right-0 z-30 px-4">
+        <div className="max-w-3xl mx-auto">
+          {!userQuestion && <SuggestionPills onSuggestionClick={handleSuggestionClick} disabled={isAsking} />}
+        </div>
+      </div>
 
       <ChatInput
         onSend={handleSend}
