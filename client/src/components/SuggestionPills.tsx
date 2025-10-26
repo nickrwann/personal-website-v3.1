@@ -8,8 +8,7 @@ interface SuggestionPillsProps {
 const SUGGESTIONS = [
   "Why should I hire Nick?",
   "What is Nick best at?",
-  "What does Nick do in his free time?",
-  "Ask a question about Nick...",
+  "What is Nick's coolest project?",
 ];
 
 export function SuggestionPills({ onSuggestionClick, disabled }: SuggestionPillsProps) {

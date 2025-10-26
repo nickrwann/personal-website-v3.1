@@ -4,9 +4,10 @@ interface UserBubbleProps {
 
 export function UserBubble({ content }: UserBubbleProps) {
   return (
-    <div className="flex justify-end mb-4" data-testid="bubble-user">
-      <div className="bg-primary text-primary-foreground px-4 py-2.5 rounded-lg max-w-[85%] md:max-w-[600px]">
-        <p className="text-sm leading-relaxed">{content}</p>
+    <div className="mb-6" data-testid="bubble-user">
+      <div className="max-w-full md:max-w-[700px]">
+        <p className="text-sm text-muted-foreground font-medium mb-2">You</p>
+        <p className="text-sm leading-relaxed text-foreground">{content}</p>
       </div>
     </div>
   );
