@@ -49,42 +49,45 @@ Preferred communication style: Simple, everyday language.
   - Uses null vs empty string distinction: `streamedDescription === null` means use original (completed/JSX), `streamedDescription === ''` means streaming started but no characters yet
 
 **ChatGPT-Style Chat Interface**:
-- **In-Flow Input Bar**: Chat input positioned in page flow (not fixed) with clean one-container design
+- **Unified ChatInputGroup Component**: Single component wrapping both suggestion pills and input bar
+  - Ensures pills and input bar move together as one unit during keyboard interactions
+  - Applies keyboard offset transform to entire group (pills stay above input bar)
+  - Two stable states: resting at bottom of page, or lifted above mobile keyboard
+  - No jumping, no overlap, no viewport issues
+- **Chat Input Bar Layout**: Clean single-row design positioned in page flow (not fixed)
   - Layout: refresh icon → textarea → character counter → send button (all vertically centered)
-  - Removed mic and plus buttons for cleaner, more focused design
   - Refresh button resets chat state without page reload (clears Q&A, restores suggestions)
   - Character counter positioned inline (not absolute) for better balance
   - Send button with perfectly centered paper airplane icon
-  - Tight bottom padding (pb-6) makes input bar feel like page footer
-  - Subtle border and background, not blocky or loud
-- **Auto-Expanding Textarea**: Input expands vertically as user types (max 200px height), adds scrollbar when exceeded
-  - Starts at one line, grows smoothly without layout jumps
-  - Character counter (0/250) in bottom-right
+  - Auto-expanding textarea (max 200px height), adds scrollbar when exceeded
   - Enter to send, Shift+Enter for new line
-- **Visual Viewport API**: Mobile keyboard handling - input bar lifts above keyboard automatically
+  - Character limit: 0/250
+- **Contextual Prompt Suggestions**: 
+  - Always positioned directly above input bar (3-unit bottom margin)
+  - Visibility: show when `!hasSentMessage`, hide after message sent
+  - Pills reappear when chat is reset via refresh button
+  - Pills stay visible while user types (only hide after send)
+  - Pills wrap to multiple lines on mobile with proper spacing
+  - No outer container - individual rounded pill chips
+  - Clicking suggestion populates textarea and sends message
+- **Mobile Keyboard Handling (Visual Viewport API)**:
   - Detects keyboard height: `window.innerHeight - visualViewport.height`
   - Uses requestAnimationFrame batching to prevent jumps during keyboard animation
   - 50px threshold ensures only real keyboard events trigger movement
-  - Applies `translateY()` transform to lift bar above keyboard
-  - Smooth 0.2s ease-out transitions
-  - Bar stays anchored above keyboard while typing (no unintended dismissal)
-  - Deliberate scroll-up >100px dismisses keyboard (150ms debounce prevents OS micro-scroll triggers)
+  - Applies `translateY(-${keyboardOffset}px)` to entire ChatInputGroup
+  - No transition during keyboard opening (prevents lag), smooth 0.2s ease-out when closing
+  - Uses ref pattern (`keyboardOffsetRef`) to avoid stale closures in scroll handler
+  - **Scroll-to-dismiss**: Any upward scroll while keyboard open immediately blurs textarea
+    - Scroll handler reads latest keyboard offset via ref (no timing delays)
+    - Deterministic: first upward scroll always dismisses keyboard
+    - After blur, bar returns to resting position at bottom of page
   - No auto-scroll of page content when focusing input
-- **Contextual Prompt Suggestions**: 
-  - Uses IntersectionObserver with strict -100px rootMargin for accurate bottom detection
-  - Pills stay visible while user types - only hide after message is sent
-  - `hasSentMessage` state tracks whether to show suggestions
-  - Pills reappear when chat is reset via reload button
-  - No outer box container - just pills with subtle borders and rounded corners
-  - Pills wrap to multiple lines on mobile with proper spacing (px-2 mobile padding)
-  - Smooth fade and slide animations (300ms ease-in-out with 8px translateY)
-  - Height animates to 0 when hidden to prevent layout jumps
-  - Clicking suggestion populates textarea and sends message
+  - Bar stays anchored above keyboard until user scrolls up or keyboard closes
 - **Responsive Design**: 
-  - Mic icon hidden on screens < 640px (sm breakpoint)
   - Icons never wrap to second row
   - Readable font sizes maintained on all screen sizes
   - Textarea prioritized for horizontal space
+  - Pills wrap cleanly on narrow mobile screens
 - **Theme Support**: All components work correctly in both light and dark mode with proper contrast
 
 ### Backend Architecture
