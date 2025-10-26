@@ -13,7 +13,7 @@ const SUGGESTIONS = [
 
 export function SuggestionPills({ onSuggestionClick, disabled }: SuggestionPillsProps) {
   return (
-    <div className="flex flex-wrap gap-2 justify-center" data-testid="container-suggestions">
+    <div className="flex flex-wrap gap-2 justify-center px-2 sm:px-0" data-testid="container-suggestions">
       {SUGGESTIONS.map((suggestion, index) => (
         <Button
           key={index}
@@ -22,7 +22,7 @@ export function SuggestionPills({ onSuggestionClick, disabled }: SuggestionPills
           onClick={() => onSuggestionClick(suggestion)}
           disabled={disabled}
           data-testid={`button-suggestion-${index}`}
-          className="text-sm px-4 py-2 hover-elevate whitespace-normal text-center"
+          className="text-sm px-3 py-2 hover-elevate whitespace-normal text-center max-w-full break-words"
         >
           {suggestion}
         </Button>

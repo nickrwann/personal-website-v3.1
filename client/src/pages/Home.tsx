@@ -15,35 +15,30 @@ export default function Home() {
   const [showScrollButton, setShowScrollButton] = useState(false);
   
   const hasStreamedRef = useRef(false);
-  const checkScrollPositionRef = useRef<() => void>();
 
-  // Check if user is at bottom of page
+  // Use IntersectionObserver to detect if bottom sentinel is visible
+  // Show scroll button only when sentinel is NOT visible (content below viewport)
   useEffect(() => {
-    const checkScrollPosition = () => {
-      const scrollHeight = document.documentElement.scrollHeight;
-      const scrollTop = window.scrollY;
-      const clientHeight = window.innerHeight;
-      
-      // Show button when NOT at bottom (has more content below)
-      // Hide button when AT bottom (within 50px of bottom)
-      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 50;
-      setShowScrollButton(!isAtBottom);
-    };
+    const sentinel = document.getElementById('bottom-sentinel');
+    if (!sentinel) return;
 
-    // Store in ref so streaming effects can call it
-    checkScrollPositionRef.current = checkScrollPosition;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        // Show button when sentinel is NOT visible (content below viewport)
+        setShowScrollButton(!entry.isIntersecting);
+      },
+      {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0,
+      }
+    );
 
-    // Check on mount
-    checkScrollPosition();
-
-    // Check on scroll
-    window.addEventListener('scroll', checkScrollPosition);
-    // Check on resize (viewport height change)
-    window.addEventListener('resize', checkScrollPosition);
+    observer.observe(sentinel);
 
     return () => {
-      window.removeEventListener('scroll', checkScrollPosition);
-      window.removeEventListener('resize', checkScrollPosition);
+      observer.disconnect();
     };
   }, []);
 
@@ -58,8 +53,8 @@ export default function Home() {
     let timeoutId: NodeJS.Timeout;
     let isActive = true; // Track if effect is still active
 
-    // Human-readable streaming speed: 1 character every 25ms (40 chars/sec)
-    const charDelay = 25;
+    // Human-readable streaming speed: 1 character every 10ms (100 chars/sec)
+    const charDelay = 10;
 
     // Stream the About section character by character
     const streamAbout = () => {
@@ -70,13 +65,10 @@ export default function Home() {
         const newContent = aboutContent.slice(0, aboutIndex + 1);
         setStreamedAbout(newContent);
         aboutIndex += 1;
-        // Check scroll position as content grows
-        setTimeout(() => checkScrollPositionRef.current?.(), 0);
         timeoutId = setTimeout(streamAbout, charDelay);
       } else {
         // About section complete, start showing experiences
         setStreamedAbout(aboutContent);
-        setTimeout(() => checkScrollPositionRef.current?.(), 0);
         timeoutId = setTimeout(startNextExperience, 300);
       }
     };
@@ -91,12 +83,10 @@ export default function Home() {
         setStreamedExperienceText("");
         experienceTextIndex = 0;
         // Brief delay before streaming description
-        setTimeout(() => checkScrollPositionRef.current?.(), 0);
         timeoutId = setTimeout(streamExperienceDescription, 50);
       } else {
         // All experiences complete
         setIsStreaming(false);
-        setTimeout(() => checkScrollPositionRef.current?.(), 0);
       }
     };
 
@@ -113,7 +103,6 @@ export default function Home() {
           const newText = currentExp.description.slice(0, experienceTextIndex + 1);
           setStreamedExperienceText(newText);
           experienceTextIndex += 1;
-          setTimeout(() => checkScrollPositionRef.current?.(), 0);
           timeoutId = setTimeout(streamExperienceDescription, charDelay);
           return;
         }
@@ -122,7 +111,6 @@ export default function Home() {
       // Description complete (string finished streaming or JSX shown immediately)
       // Don't set to empty string - the mapping logic will use null for completed experiences
       experienceIndex++;
-      setTimeout(() => checkScrollPositionRef.current?.(), 0);
       timeoutId = setTimeout(startNextExperience, 300);
     };
 
@@ -196,6 +184,9 @@ export default function Home() {
               <QASection />
             </div>
           )}
+          
+          {/* Bottom sentinel for scroll-to-bottom button detection */}
+          <div id="bottom-sentinel" className="h-1" />
         </div>
         
         {/* ChatGPT-style scroll-to-bottom button */}

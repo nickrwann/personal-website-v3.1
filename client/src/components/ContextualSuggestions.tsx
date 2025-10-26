@@ -4,23 +4,21 @@ import { SuggestionPills } from "./SuggestionPills";
 interface ContextualSuggestionsProps {
   onSuggestionClick: (text: string) => void;
   disabled?: boolean;
-  isInputFocused: boolean;
-  isTyping: boolean;
+  hasSentMessage: boolean;
   sentinelId: string;
 }
 
 export function ContextualSuggestions({ 
   onSuggestionClick, 
   disabled, 
-  isInputFocused,
-  isTyping,
+  hasSentMessage,
   sentinelId 
 }: ContextualSuggestionsProps) {
   const [isAtBottom, setIsAtBottom] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
-  // Determine visibility: at bottom AND not focused AND not typing
-  const isVisible = isAtBottom && !isInputFocused && !isTyping;
+  // Determine visibility: at bottom AND no message sent yet
+  const isVisible = isAtBottom && !hasSentMessage;
 
   useEffect(() => {
     const sentinel = document.getElementById(sentinelId);
@@ -51,11 +49,13 @@ export function ContextualSuggestions({
 
   return (
     <div
-      className="w-full mb-3 transition-all duration-300 ease-in-out"
+      className="w-full mb-4 transition-all duration-300 ease-in-out"
       style={{
         opacity: isVisible ? 1 : 0,
         pointerEvents: isVisible ? 'auto' : 'none',
-        transform: isVisible ? 'translateY(0)' : 'translateY(10px)',
+        transform: isVisible ? 'translateY(0)' : 'translateY(8px)',
+        height: isVisible ? 'auto' : '0',
+        overflow: isVisible ? 'visible' : 'hidden',
       }}
       data-testid="container-contextual-suggestions"
     >

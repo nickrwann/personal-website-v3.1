@@ -59,21 +59,41 @@ export function ChatInput({
       return;
     }
 
-    const handleViewportChange = () => {
-      const viewport = window.visualViewport;
-      if (!viewport) return;
+    let rafId: number | null = null;
 
-      // Calculate keyboard height
-      const keyboardHeight = window.innerHeight - viewport.height;
-      
-      // Set offset when keyboard is visible
-      setKeyboardOffset(keyboardHeight);
+    const handleViewportChange = () => {
+      // Cancel any pending animation frame
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
+
+      // Use requestAnimationFrame to batch updates and prevent jumps
+      rafId = requestAnimationFrame(() => {
+        const viewport = window.visualViewport;
+        if (!viewport) return;
+
+        // Calculate keyboard height
+        const keyboardHeight = Math.max(0, window.innerHeight - viewport.height);
+        
+        // Only update if keyboard is actually visible (height > threshold)
+        // This prevents unnecessary updates during normal scrolling
+        if (keyboardHeight > 50) {
+          setKeyboardOffset(keyboardHeight);
+        } else {
+          setKeyboardOffset(0);
+        }
+        
+        rafId = null;
+      });
     };
 
     window.visualViewport?.addEventListener('resize', handleViewportChange);
     window.visualViewport?.addEventListener('scroll', handleViewportChange);
 
     return () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
       window.visualViewport?.removeEventListener('resize', handleViewportChange);
       window.visualViewport?.removeEventListener('scroll', handleViewportChange);
     };

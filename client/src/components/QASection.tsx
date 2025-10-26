@@ -11,19 +11,16 @@ export function QASection() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [isAsking, setIsAsking] = useState(false);
   const [showTyping, setShowTyping] = useState(false);
-  const [isInputFocused, setIsInputFocused] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [hasSentMessage, setHasSentMessage] = useState(false);
   const inputRefreshTrigger = useRef(0);
-
-  // User is typing if there's text in the input
-  const isTyping = inputValue.length > 0;
 
   const streamText = (text: string) => {
     setStreamedText("");
     setIsStreaming(true);
     let index = 0;
     const charsPerInterval = 1; // 1 character at a time
-    const intervalMs = 25; // Human-readable speed: 25ms per character (40 chars/sec)
+    const intervalMs = 10; // Human-readable speed: 10ms per character (100 chars/sec)
 
     const interval = setInterval(() => {
       if (index < text.length) {
@@ -48,6 +45,7 @@ export function QASection() {
     setIsAsking(true);
     setShowTyping(true);
     setInputValue(""); // Clear input after sending
+    setHasSentMessage(true); // Mark that a message has been sent
 
     try {
       const response = await fetch("/api/ask", {
@@ -89,6 +87,17 @@ export function QASection() {
     handleSend(text);
   };
 
+  const handleReset = () => {
+    setUserQuestion("");
+    setRawAnswer("");
+    setStreamedText("");
+    setIsStreaming(false);
+    setIsAsking(false);
+    setShowTyping(false);
+    setInputValue("");
+    setHasSentMessage(false); // Reset to show suggestions again
+  };
+
   return (
     <>
       <section className="mb-6" data-testid="section-qa">
@@ -119,22 +128,21 @@ export function QASection() {
       </section>
 
       {/* Sentinel element for IntersectionObserver - marks end of content stream */}
-      <div id="qa-sentinel" className="h-4" data-testid="sentinel-qa" />
+      <div id="qa-sentinel" className="h-2" data-testid="sentinel-qa" />
 
       {/* Contextual suggestions - visibility controlled by internal logic */}
       <ContextualSuggestions
         onSuggestionClick={handleSuggestionClick}
         disabled={isAsking}
-        isInputFocused={isInputFocused}
-        isTyping={isTyping}
+        hasSentMessage={hasSentMessage}
         sentinelId="qa-sentinel"
       />
 
       {/* Chat input bar */}
       <ChatInput
         onSend={handleSend}
+        onRefresh={handleReset}
         disabled={isAsking}
-        onFocusChange={setIsInputFocused}
         inputValue={inputValue}
         onInputChange={setInputValue}
       />
