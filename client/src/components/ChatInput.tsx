@@ -35,16 +35,16 @@ export function ChatInput({ onSend, onRefresh, disabled }: ChatInputProps) {
     // Strategy 1: Immediate scroll with delay for keyboard animation
     setTimeout(() => {
       if (inputRef.current) {
-        // Scroll with padding to ensure input is well above keyboard
-        const yOffset = -100; // Extra space above input
-        const element = inputRef.current;
-        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-        
-        window.scrollTo({ top: y, behavior: 'smooth' });
+        // Scroll the input to the top of the viewport with extra space
+        inputRef.current.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start',
+          inline: 'nearest'
+        });
       }
-    }, 300);
+    }, 100);
 
-    // Strategy 2: Second attempt after keyboard is fully shown
+    // Strategy 2: Second attempt after keyboard animation
     setTimeout(() => {
       if (inputRef.current && document.activeElement === inputRef.current) {
         inputRef.current.scrollIntoView({ 
@@ -53,29 +53,66 @@ export function ChatInput({ onSend, onRefresh, disabled }: ChatInputProps) {
           inline: 'nearest'
         });
       }
-    }, 500);
+    }, 400);
+
+    // Strategy 3: Final attempt after keyboard is fully shown
+    setTimeout(() => {
+      if (inputRef.current && document.activeElement === inputRef.current) {
+        inputRef.current.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start',
+          inline: 'nearest'
+        });
+      }
+    }, 700);
   };
 
   // Handle viewport changes when keyboard appears (Visual Viewport API)
   useEffect(() => {
     if (typeof window !== 'undefined' && 'visualViewport' in window) {
       const handleViewportResize = () => {
-        // If input is focused and viewport height decreased (keyboard appeared)
+        // If input is focused and viewport resized (keyboard appeared/disappeared)
         if (document.activeElement === inputRef.current) {
           setTimeout(() => {
             if (inputRef.current) {
-              const yOffset = -80;
-              const element = inputRef.current;
-              const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-              window.scrollTo({ top: y, behavior: 'smooth' });
+              inputRef.current.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start',
+                inline: 'nearest'
+              });
             }
-          }, 100);
+          }, 150);
         }
       };
 
       window.visualViewport?.addEventListener('resize', handleViewportResize);
       return () => window.visualViewport?.removeEventListener('resize', handleViewportResize);
     }
+  }, []);
+  
+  // Additional safeguard: handle window resize events (for older browsers)
+  useEffect(() => {
+    let resizeTimer: NodeJS.Timeout;
+    
+    const handleWindowResize = () => {
+      // Debounce resize events
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (document.activeElement === inputRef.current && inputRef.current) {
+          inputRef.current.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start',
+            inline: 'nearest'
+          });
+        }
+      }, 200);
+    };
+
+    window.addEventListener('resize', handleWindowResize);
+    return () => {
+      window.removeEventListener('resize', handleWindowResize);
+      clearTimeout(resizeTimer);
+    };
   }, []);
 
   return (
