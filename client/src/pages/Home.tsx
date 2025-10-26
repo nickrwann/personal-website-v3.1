@@ -55,20 +55,19 @@ export default function Home() {
     let experienceIndex = 0;
     let timeoutId: NodeJS.Timeout;
 
-    // Natural character delay with minor randomization (15-30ms)
-    const getRandomDelay = () => Math.floor(Math.random() * 15) + 15;
+    // Human-readable streaming speed: 1 character every 50ms
+    const charDelay = 50;
 
     // Stream the About section character by character
     const streamAbout = () => {
       if (aboutIndex < aboutContent.length) {
-        // Stream 3-5 characters at a time for more natural flow
-        const charsToAdd = Math.floor(Math.random() * 3) + 3;
-        const newContent = aboutContent.slice(0, aboutIndex + charsToAdd);
+        // Stream 1 character at a time for human-readable pacing
+        const newContent = aboutContent.slice(0, aboutIndex + 1);
         setStreamedAbout(newContent);
-        aboutIndex += charsToAdd;
+        aboutIndex += 1;
         // Check scroll position as content grows
         setTimeout(() => checkScrollPositionRef.current?.(), 0);
-        timeoutId = setTimeout(streamAbout, getRandomDelay());
+        timeoutId = setTimeout(streamAbout, charDelay);
       } else {
         // About section complete, start showing experiences
         setStreamedAbout(aboutContent);

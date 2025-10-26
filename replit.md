@@ -25,7 +25,7 @@ Preferred communication style: Simple, everyday language.
 - Component path aliases configured for clean imports (`@/components`, `@/lib`, etc.)
 
 **Key Design Patterns**
-- **ChatGPT-Like Streaming**: Character-by-character content reveal with natural pacing (randomized 15-30ms delays, 3-5 chars per iteration)
+- **ChatGPT-Like Streaming**: Character-by-character content reveal with human-readable pacing (1 character every 50ms)
 - **No Auto-Scrolling**: Page stays at top during streaming - user controls all scrolling behavior
 - **Scroll-to-Bottom Button**: ChatGPT-style floating button (centered at bottom) with scroll event listener detection
   - Shows when content extends beyond viewport
