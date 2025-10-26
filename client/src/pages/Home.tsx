@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { NWBadge } from "@/components/NWBadge";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { HeroSection } from "@/components/HeroSection";
 import { AboutSection } from "@/components/AboutSection";
 import { ExperienceSection } from "@/components/ExperienceSection";
@@ -51,6 +52,9 @@ export default function Home() {
     <>
       <div className="min-h-screen bg-background relative">
         <NWBadge />
+        <div className="fixed top-4 right-4 z-50">
+          <ThemeToggle />
+        </div>
         <div className="max-w-3xl mx-auto px-4 py-12 pb-12">
           <HeroSection />
           <AboutSection content={streamedAbout} />
