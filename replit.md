@@ -32,7 +32,11 @@ Preferred communication style: Simple, everyday language.
   - Hides when user reaches bottom (within 50px threshold)
   - Updates visibility during streaming as content grows
   - Smooth fade transitions with `opacity-0`/`opacity-100`
-- **Pulsing Cursor**: Visual indicator during streaming provides feedback that content is loading
+- **Inline Pulsing Cursor**: Visual indicator during streaming appears horizontally (inline) with text as it grows
+  - Cursor positioned inline using `inline-block` span with `align-middle`
+  - Moves horizontally character-by-character with text streaming
+  - Shows during About Me section streaming, disappears when complete
+  - Consistent cursor behavior across About section and Q&A responses
 - **Responsive Layout**: Mobile-first approach with adaptive subtitle (single line on desktop, 3 centered lines on mobile)
 - **Fixed Chrome Elements**: NW badge and theme toggle remain visible while scrolling
 - **Incremental Content Reveal**: About section streams first, then Experience items appear sequentially with fade-in animations
