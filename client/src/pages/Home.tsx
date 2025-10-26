@@ -114,7 +114,7 @@ export default function Home() {
         <div className="fixed top-4 right-4 z-50">
           <ThemeToggle />
         </div>
-        <div className="max-w-3xl mx-auto px-4 py-12 pb-96">
+        <div className="max-w-3xl mx-auto px-4 py-12 pb-24">
           <HeroSection />
           
           {/* Stream container for all content sections */}

@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { TypingIndicator } from "./TypingIndicator";
-import { SuggestionPills } from "./SuggestionPills";
-import { ChatInput } from "./ChatInput";
+import { FixedChatInput } from "./FixedChatInput";
+import { ContextualSuggestions } from "./ContextualSuggestions";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 
 export function QASection() {
@@ -11,6 +11,8 @@ export function QASection() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [isAsking, setIsAsking] = useState(false);
   const [showTyping, setShowTyping] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const inputRefreshTrigger = useRef(0);
 
   const streamText = (text: string) => {
     setStreamedText("");
@@ -79,10 +81,11 @@ export function QASection() {
 
   const handleSuggestionClick = (text: string) => {
     handleSend(text);
+    inputRefreshTrigger.current += 1;
   };
 
   return (
-    <div>
+    <>
       <section className="mb-6" data-testid="section-qa">
         {userQuestion && (
           <div className="space-y-6">
@@ -110,23 +113,25 @@ export function QASection() {
         )}
       </section>
 
+      {/* Sentinel element for IntersectionObserver - marks end of content stream */}
+      <div id="qa-sentinel" className="h-4" data-testid="sentinel-qa" />
+
+      {/* Contextual suggestions - only visible when at bottom and not typing */}
       {!userQuestion && (
-        <div className="mb-4">
-          <SuggestionPills onSuggestionClick={handleSuggestionClick} disabled={isAsking} />
-        </div>
+        <ContextualSuggestions
+          onSuggestionClick={handleSuggestionClick}
+          disabled={isAsking}
+          isInputFocused={isInputFocused}
+          sentinelId="qa-sentinel"
+        />
       )}
 
-      <div className="mb-4">
-        <ChatInput
-          onSend={handleSend}
-          onRefresh={() => {
-            setUserQuestion("");
-            setRawAnswer("");
-            setStreamedText("");
-          }}
-          disabled={isAsking}
-        />
-      </div>
-    </div>
+      {/* Fixed chat input at bottom */}
+      <FixedChatInput
+        onSend={handleSend}
+        disabled={isAsking}
+        onFocusChange={setIsInputFocused}
+      />
+    </>
   );
 }

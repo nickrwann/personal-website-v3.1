@@ -37,6 +37,22 @@ Preferred communication style: Simple, everyday language.
 - **Fixed Chrome Elements**: NW badge and theme toggle remain visible while scrolling
 - **Incremental Content Reveal**: About section streams first, then Experience items appear sequentially with fade-in animations
 
+**ChatGPT-Style Chat Interface**:
+- **Fixed Input Bar**: Pinned to bottom of viewport using `position: fixed` with safe-area insets
+- **Auto-Expanding Textarea**: Input expands vertically as user types (max 200px height), adds scrollbar when exceeded
+- **Visual Viewport API**: Mobile keyboard handling - input bar rises above keyboard automatically
+  - Detects keyboard height: `window.innerHeight - visualViewport.height`
+  - Applies bottom offset dynamically with smooth transitions
+  - No scroll hacks or artificial padding
+- **Contextual Prompt Suggestions**: 
+  - Uses IntersectionObserver on sentinel element to detect when user is at bottom
+  - Pills fade in only when: (1) at bottom, (2) content fully streamed, (3) input not focused
+  - Smooth fade-in/fade-out animations
+  - Fixed position between content and input bar
+  - Clicking suggestion populates and focuses input instantly
+- **Content Scrolls Behind**: Main content area scrolls naturally behind fixed input bar
+- **Minimal Bottom Padding**: Only enough for visual breathing room (pb-24 = 96px), no excessive whitespace
+
 ### Backend Architecture
 
 **Server Framework**

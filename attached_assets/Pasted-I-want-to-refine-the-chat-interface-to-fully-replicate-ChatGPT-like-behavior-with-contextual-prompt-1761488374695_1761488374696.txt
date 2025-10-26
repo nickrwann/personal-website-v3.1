@@ -1,0 +1,97 @@
+I want to refine the chat interface to fully replicate ChatGPT-like behavior, with contextual prompt suggestions and perfect mobile handling.
+
+1. Chat Input Layout
+
+Keep the existing input bar design and pulsing cursor.
+
+The chat input must stay pinned to the bottom of the viewport at all times.
+
+Use position: fixed; bottom: 0; left: 0; right: 0;
+
+Respect safe-area insets using env(safe-area-inset-bottom).
+
+Remove any unnecessary bottom padding or extra whitespace.
+
+The main chat content should scroll behind the input bar naturally.
+
+2. Mobile Keyboard Behavior
+
+When the user focuses the input field on mobile, the bar should move above the keyboard automatically.
+
+Implement this with the Visual Viewport API:
+
+Detect keyboard height as window.innerHeight - visualViewport.height.
+
+Apply a bottom offset or transform equal to that height (plus a few pixels).
+
+Reset the offset when the keyboard closes.
+
+No artificial padding. No delayed scroll hacks. It should behave smoothly and natively.
+
+3. Input Field Behavior
+
+Use a <textarea> that auto-expands vertically as the user types, up to a max height (for example, 200 px).
+
+It should never overflow out of view; add a small scrollbar once max height is reached.
+
+Keep the send button and mic icon in the same row, right-aligned.
+
+4. Prompt Suggestions (Context-Aware Floating Row)
+
+Implement a row of prompt suggestion pills (like “Why should I hire Nick?” etc.) that appear only when the user is at the bottom of the chat and no typing is active.
+
+Behavior rules:
+
+Use an IntersectionObserver tied to a sentinel element (for example, #stream-end).
+
+When the sentinel is visible (user at bottom and content fully streamed):
+
+Show the prompt suggestion row above the input bar with a fade-in animation.
+
+When the user scrolls up, starts typing, or the sentinel is not visible:
+
+Fade the suggestions out smoothly.
+
+The suggestion row should not overlay chat content; it should occupy its own fixed space between the streamed content and the input bar.
+
+Clicking a suggestion should populate the input field instantly and focus it.
+
+5. Expected User Experience
+
+On desktop:
+
+Input bar stays fixed at bottom.
+
+Suggestion pills appear contextually when the user is idle at the bottom.
+
+Input expands dynamically with text.
+
+Smooth transitions throughout.
+
+On mobile:
+
+Input stays visible and pinned above the keyboard when typing.
+
+Suggestion pills fade in only when at the bottom and no input focus is active.
+
+Layout adjusts fluidly without overlapping content.
+
+6. Don’t
+
+Don’t use large bottom padding.
+
+Don’t force scroll behavior.
+
+Don’t pin suggestions permanently.
+
+7. Summary of the Goal
+
+The UI should now feel like a true ChatGPT-style conversation flow:
+
+Streamed content above,
+
+Context-aware prompt suggestions fading in at rest,
+
+Expanding input pinned to the bottom that rises with the mobile keyboard,
+
+Clean animations and no layout jumps.
