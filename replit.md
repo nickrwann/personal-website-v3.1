@@ -25,11 +25,14 @@ Preferred communication style: Simple, everyday language.
 - Component path aliases configured for clean imports (`@/components`, `@/lib`, etc.)
 
 **Key Design Patterns**
-- Text streaming animations simulate AI-like conversational responses
-- Responsive layout with mobile-first approach using Tailwind breakpoints
-- Fixed chrome elements (NW badge, theme toggle) that remain visible while scrolling
-- Auto-scrolling during content streaming for natural reading flow
-- Incremental content reveal (About section streams, then Experience items appear sequentially)
+- **ChatGPT-Like Streaming**: Character-by-character content reveal with natural pacing (randomized 15-30ms delays, 3-5 chars per iteration)
+- **Smart Scroll Management**: IntersectionObserver-based detection stops auto-scroll when user scrolls up during streaming
+- **Scroll-to-Bottom Button**: ChatGPT-style floating button (bottom-right) appears during streaming when content extends beyond viewport
+- **Pulsing Cursor**: Visual indicator during streaming provides feedback that content is loading
+- **Auto-Focus**: Chat input automatically receives focus after streaming completes for seamless interaction
+- **Responsive Layout**: Mobile-first approach with adaptive subtitle (single line on desktop, 3 centered lines on mobile)
+- **Fixed Chrome Elements**: NW badge and theme toggle remain visible while scrolling
+- **Incremental Content Reveal**: About section streams first, then Experience items appear sequentially with fade-in animations
 
 ### Backend Architecture
 
@@ -76,10 +79,18 @@ Preferred communication style: Simple, everyday language.
 ### Content Management
 
 **Static Content**
-- Profile information, about section, and experience data stored in TypeScript files
-- Content files in `client/src/content/` directory provide structured data
-- Markdown rendering support via `react-markdown` for rich text formatting
-- Dynamic content streaming creates typewriter effect for engaging presentation
+- Profile information, about section, and experience data stored in TypeScript files in `client/src/content/` directory
+- Content wrapped in extensible stream container (`#stream-container`) for easy addition of future sections
+- Markdown rendering support via `react-markdown` for rich text formatting in Q&A responses
+
+**Streaming UX Implementation**
+- Natural character-by-character streaming mimics ChatGPT's conversational pacing
+- About section (~407 chars) streams first with randomized delays for natural flow
+- Five experience items reveal sequentially (400ms between each) after About completes
+- Total streaming time approximately 3-4 seconds from page load
+- Pulsing cursor indicator provides visual feedback during streaming
+- Q&A section fades in smoothly only after all content streaming completes
+- Chat input auto-focuses for immediate user interaction post-streaming
 
 ## External Dependencies
 
