@@ -82,8 +82,9 @@ export function QASection() {
   };
 
   const handleSuggestionClick = (text: string) => {
+    // Only populate the textarea, don't send immediately
+    // User can review and edit before sending
     setInputValue(text);
-    handleSend(text);
   };
 
   const handleReset = () => {

@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import { RefreshCw, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ExpandingTextarea } from "./ExpandingTextarea";
-import { SuggestionPills } from "./SuggestionPills";
 
 interface ChatInputGroupProps {
   onSend: (message: string) => void;
@@ -15,6 +14,12 @@ interface ChatInputGroupProps {
 }
 
 const MAX_CHARS = 250;
+
+const SUGGESTIONS = [
+  "Why should I hire Nick?",
+  "What is Nick best at?",
+  "What is Nick's coolest project?",
+];
 
 export function ChatInputGroup({ 
   onSend, 
@@ -47,6 +52,24 @@ export function ChatInputGroup({
       e.preventDefault();
       handleSend();
     }
+  };
+
+  const handlePillClick = (text: string) => {
+    // Populate textarea and focus it
+    setValue(text);
+    // Notify parent component
+    onSuggestionClick(text);
+    // Focus textarea after a brief delay to ensure value is set
+    setTimeout(() => {
+      textareaRef.current?.focus();
+    }, 10);
+  };
+
+  const handleRefresh = () => {
+    // Reset local input state
+    setValue("");
+    // Call parent refresh handler if provided
+    onRefresh?.();
   };
 
   // Keep ref in sync with state
@@ -131,29 +154,44 @@ export function ChatInputGroup({
       ref={containerRef}
       className="w-full"
       style={{
+        paddingBottom: 'max(1rem, env(safe-area-inset-bottom))',
         transform: keyboardOffset > 0 ? `translateY(-${keyboardOffset}px)` : 'translateY(0)',
         transition: keyboardOffset > 0 ? 'none' : 'transform 0.2s ease-out',
       }}
       data-testid="container-chat-input-group"
     >
-      {/* Suggestion pills - directly above input bar */}
-      {showSuggestions && (
-        <div className="mb-3" data-testid="container-suggestions-wrapper">
-          <SuggestionPills 
-            onSuggestionClick={onSuggestionClick} 
-            disabled={disabled} 
-          />
-        </div>
-      )}
+      {/* Single rounded card containing both pills and input row */}
+      <div className="bg-card border border-card-border rounded-3xl shadow-sm overflow-hidden">
+        {/* Suggestion pills - vertical stack */}
+        {showSuggestions && (
+          <div className="px-4 pt-4 pb-3 space-y-2" data-testid="container-suggestions-wrapper">
+            {SUGGESTIONS.map((suggestion, index) => (
+              <Button
+                key={index}
+                variant="secondary"
+                onClick={() => handlePillClick(suggestion)}
+                disabled={disabled}
+                data-testid={`button-suggestion-${index}`}
+                className="w-full px-4 py-3 h-auto text-sm text-left justify-start rounded-2xl hover-elevate active-elevate-2 whitespace-normal"
+              >
+                {suggestion}
+              </Button>
+            ))}
+          </div>
+        )}
 
-      {/* Chat input bar */}
-      <div className="bg-card border border-card-border rounded-lg shadow-sm">
-        <div className="flex items-center gap-2 p-2.5">
+        {/* Input row - separator line when pills are visible */}
+        {showSuggestions && (
+          <div className="border-t border-border mx-4" />
+        )}
+
+        {/* Input row */}
+        <div className="flex items-center gap-2 p-3">
           {/* Refresh icon - far left */}
           <Button
             size="icon"
             variant="ghost"
-            onClick={onRefresh || (() => window.location.reload())}
+            onClick={handleRefresh}
             disabled={disabled}
             data-testid="button-refresh"
             className="flex-shrink-0 hover-elevate h-9 w-9"
