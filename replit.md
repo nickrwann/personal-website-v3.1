@@ -26,10 +26,13 @@ Preferred communication style: Simple, everyday language.
 
 **Key Design Patterns**
 - **ChatGPT-Like Streaming**: Character-by-character content reveal with natural pacing (randomized 15-30ms delays, 3-5 chars per iteration)
-- **Smart Scroll Management**: IntersectionObserver-based detection stops auto-scroll when user scrolls up during streaming
-- **Scroll-to-Bottom Button**: ChatGPT-style floating button (bottom-right) appears during streaming when content extends beyond viewport
+- **No Auto-Scrolling**: Page stays at top during streaming - user controls all scrolling behavior
+- **Scroll-to-Bottom Button**: ChatGPT-style floating button (centered at bottom) with scroll event listener detection
+  - Shows when content extends beyond viewport
+  - Hides when user reaches bottom (within 50px threshold)
+  - Updates visibility during streaming as content grows
+  - Smooth fade transitions with `opacity-0`/`opacity-100`
 - **Pulsing Cursor**: Visual indicator during streaming provides feedback that content is loading
-- **Auto-Focus**: Chat input automatically receives focus after streaming completes for seamless interaction
 - **Responsive Layout**: Mobile-first approach with adaptive subtitle (single line on desktop, 3 centered lines on mobile)
 - **Fixed Chrome Elements**: NW badge and theme toggle remain visible while scrolling
 - **Incremental Content Reveal**: About section streams first, then Experience items appear sequentially with fade-in animations
@@ -90,7 +93,7 @@ Preferred communication style: Simple, everyday language.
 - Total streaming time approximately 3-4 seconds from page load
 - Pulsing cursor indicator provides visual feedback during streaming
 - Q&A section fades in smoothly only after all content streaming completes
-- Chat input auto-focuses for immediate user interaction post-streaming
+- Scroll position check integrated into streaming effects to update button visibility as content grows
 
 ## External Dependencies
 
