@@ -42,8 +42,8 @@ export default function Home() {
 
   return (
     <>
-      <NWBadge />
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background relative">
+        <NWBadge />
         <div className="max-w-3xl mx-auto px-4 py-12 pb-12">
           <HeroSection />
           <AboutSection content={streamedAbout} />

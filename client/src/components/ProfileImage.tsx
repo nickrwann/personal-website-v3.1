@@ -1,4 +1,4 @@
-import profileImage from "@assets/generated_images/Professional_software_engineer_portrait_e44b99f5.png";
+import profileImage from "@assets/profile.jpeg";
 
 export function ProfileImage() {
   return (
