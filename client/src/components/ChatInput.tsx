@@ -35,13 +35,8 @@ export function ChatInput({ onSend, onRefresh, disabled }: ChatInputProps) {
   }, [disabled]);
 
   return (
-    <div
-      className="fixed bottom-0 left-0 right-0 z-40"
-      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
-      data-testid="container-chat-input"
-    >
-      <div className="max-w-3xl mx-auto px-4 pb-4">
-        <div className="bg-card border border-card-border rounded-lg p-2.5">
+    <div data-testid="container-chat-input">
+      <div className="bg-card border border-card-border rounded-lg p-2.5">
           <div className="flex items-center gap-2">
             <Button
               size="icon"
@@ -106,7 +101,6 @@ export function ChatInput({ onSend, onRefresh, disabled }: ChatInputProps) {
               <Send className="h-4 w-4" />
             </Button>
           </div>
-        </div>
       </div>
     </div>
   );

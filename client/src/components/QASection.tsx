@@ -83,7 +83,7 @@ export function QASection() {
 
   return (
     <div>
-      <section className="mb-12" data-testid="section-qa">
+      <section className="mb-6" data-testid="section-qa">
         {userQuestion && (
           <div className="space-y-6">
             <div className="flex justify-end" data-testid="bubble-user">
@@ -103,21 +103,23 @@ export function QASection() {
         )}
       </section>
 
-      <div className="fixed bottom-20 left-0 right-0 z-30 px-4">
-        <div className="max-w-3xl mx-auto">
-          {!userQuestion && <SuggestionPills onSuggestionClick={handleSuggestionClick} disabled={isAsking} />}
+      {!userQuestion && (
+        <div className="mb-4">
+          <SuggestionPills onSuggestionClick={handleSuggestionClick} disabled={isAsking} />
         </div>
-      </div>
+      )}
 
-      <ChatInput
-        onSend={handleSend}
-        onRefresh={() => {
-          setUserQuestion("");
-          setAssistantAnswer("");
-          setStreamedContent("");
-        }}
-        disabled={isAsking}
-      />
+      <div className="mb-12">
+        <ChatInput
+          onSend={handleSend}
+          onRefresh={() => {
+            setUserQuestion("");
+            setAssistantAnswer("");
+            setStreamedContent("");
+          }}
+          disabled={isAsking}
+        />
+      </div>
     </div>
   );
 }

@@ -44,7 +44,7 @@ export default function Home() {
     <>
       <NWBadge />
       <div className="min-h-screen bg-background">
-        <div className="max-w-3xl mx-auto px-4 py-12 pb-48">
+        <div className="max-w-3xl mx-auto px-4 py-12 pb-12">
           <HeroSection />
           <AboutSection content={streamedAbout} />
           <ExperienceSection experiences={experiences} content={streamedExperiences} />
