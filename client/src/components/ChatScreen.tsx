@@ -56,19 +56,39 @@ export function ChatScreen() {
     setAssistantAnswer("");
     setStreamedContent("");
     setState("asking");
+    setShowTyping(true);
 
-    setTimeout(() => {
-      const mockAnswer = `Based on Nick's background, ${message.toLowerCase().includes("hire") ? "you should hire Nick because of his 5+ years of experience building production AI systems, his track record of 20+ patents, and his expertise in RAG pipelines and multi-agent systems. He excels at moving from prototype to product without losing clarity." : message.toLowerCase().includes("best") ? "Nick is best at building reliable, scalable AI systems. His expertise includes retrieval-augmented generation pipelines, multi-agent platforms, and MLOps optimization. He has a proven track record of shipping production AI features." : message.toLowerCase().includes("free time") ? "In his free time, Nick enjoys exploring the city, traveling to new places, lifting weights, and hunting down the best latte in town. He values staying active and experiencing new things." : "Nick is an experienced AI engineer with expertise in RAG systems, multi-agent platforms, and production AI development. He has contributed to 20+ patents and focuses on building systems that solve real problems."}`;
+    try {
+      const response = await fetch("/api/ask", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ question: message }),
+      });
 
-      setShowTyping(true);
-      setTimeout(() => {
-        setShowTyping(false);
-        streamText(mockAnswer, () => {
-          setAssistantAnswer(mockAnswer);
-          setState("idle");
-        });
-      }, 800);
-    }, 300);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to get response");
+      }
+
+      const data = await response.json();
+      const answer = data.answer || "No response received.";
+
+      setShowTyping(false);
+      streamText(answer, () => {
+        setAssistantAnswer(answer);
+        setState("idle");
+      });
+    } catch (error) {
+      console.error("Error asking question:", error);
+      setShowTyping(false);
+      const errorMessage = "Sorry, I encountered an error. Please try again.";
+      streamText(errorMessage, () => {
+        setAssistantAnswer(errorMessage);
+        setState("idle");
+      });
+    }
   };
 
   const handleRefresh = () => {
