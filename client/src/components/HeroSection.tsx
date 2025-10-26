@@ -19,12 +19,12 @@ export function HeroSection() {
         AI Systems Engineer & Creative Problem Solver
       </p>
       
-      <div className="flex flex-col sm:flex-row gap-4 text-sm text-muted-foreground">
-        <div className="flex items-center gap-2" data-testid="text-location">
+      <div className="flex flex-row flex-wrap justify-center gap-4 text-sm text-muted-foreground">
+        <div className="flex items-center gap-2 whitespace-nowrap" data-testid="text-location">
           <MapPin className="w-4 h-4" />
           <span>Austin, TX</span>
         </div>
-        <div className="flex items-center gap-2" data-testid="text-email">
+        <div className="flex items-center gap-2 whitespace-nowrap" data-testid="text-email">
           <Mail className="w-4 h-4" />
           <a href="mailto:nickrwann@gmail.com" className="hover:text-foreground transition-colors">
             nickrwann@gmail.com
