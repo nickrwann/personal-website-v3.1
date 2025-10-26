@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { RefreshCw, Plus, Mic, Send } from "lucide-react";
+import { RefreshCw, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ExpandingTextarea } from "./ExpandingTextarea";
 
@@ -60,6 +60,8 @@ export function ChatInput({
     }
 
     let rafId: number | null = null;
+    let scrollStartY = window.scrollY;
+    let isUserScrolling = false;
 
     const handleViewportChange = () => {
       // Cancel any pending animation frame
@@ -87,17 +89,48 @@ export function ChatInput({
       });
     };
 
+    const handleScrollStart = () => {
+      scrollStartY = window.scrollY;
+      isUserScrolling = true;
+    };
+
+    const handleScrollEnd = () => {
+      const currentScrollY = window.scrollY;
+      const scrollDistance = scrollStartY - currentScrollY;
+      
+      // If user scrolled up significantly (>100px) while keyboard is open, dismiss keyboard
+      // This avoids dismissing on small OS-induced scroll adjustments
+      if (isUserScrolling && scrollDistance > 100 && keyboardOffset > 0) {
+        textareaRef.current?.blur();
+      }
+      
+      isUserScrolling = false;
+    };
+
+    let scrollTimeout: NodeJS.Timeout;
+    const handleScroll = () => {
+      if (!isUserScrolling) {
+        handleScrollStart();
+      }
+      
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(handleScrollEnd, 150);
+    };
+
     window.visualViewport?.addEventListener('resize', handleViewportChange);
     window.visualViewport?.addEventListener('scroll', handleViewportChange);
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       if (rafId !== null) {
         cancelAnimationFrame(rafId);
       }
+      clearTimeout(scrollTimeout);
       window.visualViewport?.removeEventListener('resize', handleViewportChange);
       window.visualViewport?.removeEventListener('scroll', handleViewportChange);
+      window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [keyboardOffset]);
 
   return (
     <div
@@ -110,7 +143,7 @@ export function ChatInput({
       data-testid="container-chat-input"
     >
       <div className="bg-card border border-card-border rounded-lg shadow-sm">
-        <div className="flex items-end gap-1.5 p-2">
+        <div className="flex items-center gap-2 p-2.5">
           {/* Refresh icon - far left */}
           <Button
             size="icon"
@@ -118,62 +151,38 @@ export function ChatInput({
             onClick={onRefresh || (() => window.location.reload())}
             disabled={disabled}
             data-testid="button-refresh"
-            className="flex-shrink-0 hover-elevate self-end h-9 w-9"
+            className="flex-shrink-0 hover-elevate h-9 w-9"
           >
             <RefreshCw className="h-4 w-4" />
           </Button>
 
-          {/* Plus button */}
-          <Button
-            size="icon"
-            variant="ghost"
-            disabled={disabled}
-            data-testid="button-plus"
-            className="flex-shrink-0 hover-elevate self-end h-9 w-9"
-            onClick={() => console.log("Plus button clicked")}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-
-          {/* Expanding textarea with character counter */}
-          <div className="flex-1 relative min-w-0">
-            <div className="pr-14">
-              <ExpandingTextarea
-                ref={textareaRef}
-                value={value}
-                onChange={(val) => {
-                  if (val.length <= MAX_CHARS) {
-                    setValue(val);
-                  }
-                }}
-                onKeyDown={handleKeyDown}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-                placeholder="Ask anything about Nick..."
-                disabled={disabled}
-                maxLength={MAX_CHARS}
-                maxHeight={200}
-              />
-            </div>
-            <div 
-              className="absolute right-0 bottom-1 text-xs text-muted-foreground pointer-events-none select-none whitespace-nowrap" 
-              data-testid="text-char-counter"
-            >
-              {value.length}/{MAX_CHARS}
-            </div>
+          {/* Expanding textarea */}
+          <div className="flex-1 min-w-0">
+            <ExpandingTextarea
+              ref={textareaRef}
+              value={value}
+              onChange={(val) => {
+                if (val.length <= MAX_CHARS) {
+                  setValue(val);
+                }
+              }}
+              onKeyDown={handleKeyDown}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              placeholder="Ask anything about Nick..."
+              disabled={disabled}
+              maxLength={MAX_CHARS}
+              maxHeight={200}
+            />
           </div>
 
-          {/* Mic icon - hidden on narrow screens */}
-          <Button
-            size="icon"
-            variant="ghost"
-            disabled={disabled}
-            data-testid="button-mic"
-            className="flex-shrink-0 hover-elevate self-end h-9 w-9 hidden sm:flex"
-            onClick={() => console.log("Mic button clicked")}
+          {/* Character counter */}
+          <div 
+            className="flex-shrink-0 text-xs text-muted-foreground select-none whitespace-nowrap" 
+            data-testid="text-char-counter"
           >
-            <Mic className="h-4 w-4" />
-          </Button>
+            {value.length}/{MAX_CHARS}
+          </div>
 
           {/* Send button - circular pill on far right */}
           <Button
@@ -181,7 +190,7 @@ export function ChatInput({
             onClick={handleSend}
             disabled={disabled || !value.trim() || value.length > MAX_CHARS}
             data-testid="button-send"
-            className="flex-shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full self-end h-9 w-9"
+            className="flex-shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-9 w-9 flex items-center justify-center"
           >
             <Send className="h-4 w-4" />
           </Button>
