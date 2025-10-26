@@ -15,7 +15,7 @@ export function HeroSection() {
         Nick Wanner
       </h1>
       
-      <p className="text-lg md:text-xl text-muted-foreground mb-6" data-testid="text-subtitle">
+      <p className="text-lg md:text-xl text-muted-foreground mb-6 whitespace-nowrap" data-testid="text-subtitle">
         AI Systems Engineer & Creative Problem Solver
       </p>
       
