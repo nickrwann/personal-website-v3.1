@@ -7,7 +7,7 @@ export function ProfileImage() {
         <img
           src={profileImage}
           alt="Nick Wanner"
-          className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover ring-4 ring-white shadow-lg"
+          className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover ring-1 ring-border"
           data-testid="img-profile"
         />
       </div>

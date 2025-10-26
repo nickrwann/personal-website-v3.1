@@ -20,8 +20,8 @@ export function ChatScreen() {
   const streamText = (text: string, onComplete?: () => void) => {
     setStreamedContent("");
     let index = 0;
-    const charsPerInterval = 3;
-    const intervalMs = 50;
+    const charsPerInterval = 8;
+    const intervalMs = 30;
 
     const interval = setInterval(() => {
       if (index < text.length) {

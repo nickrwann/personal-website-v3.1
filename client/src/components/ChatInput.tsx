@@ -41,7 +41,7 @@ export function ChatInput({ onSend, onRefresh, disabled }: ChatInputProps) {
       data-testid="container-chat-input"
     >
       <div className="max-w-3xl mx-auto px-4 pb-4">
-        <div className="bg-card border border-card-border rounded-xl shadow-lg p-3">
+        <div className="bg-card border border-card-border rounded-lg p-2.5">
           <div className="flex items-center gap-2">
             <Button
               size="icon"
