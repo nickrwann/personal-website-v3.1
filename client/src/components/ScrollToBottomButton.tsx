@@ -9,7 +9,7 @@ interface ScrollToBottomButtonProps {
 export function ScrollToBottomButton({ onClick, show }: ScrollToBottomButtonProps) {
   return (
     <div 
-      className={`fixed bottom-24 left-1/2 -translate-x-1/2 z-40 transition-opacity duration-300 ${
+      className={`fixed bottom-20 left-1/2 -translate-x-1/2 z-40 transition-opacity duration-300 ${
         show ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}
     >

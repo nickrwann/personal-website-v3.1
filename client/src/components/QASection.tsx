@@ -7,35 +7,12 @@ import { MarkdownRenderer } from "./MarkdownRenderer";
 export function QASection() {
   const [userQuestion, setUserQuestion] = useState("");
   const [assistantAnswer, setAssistantAnswer] = useState("");
-  const [streamedContent, setStreamedContent] = useState("");
   const [isAsking, setIsAsking] = useState(false);
   const [showTyping, setShowTyping] = useState(false);
-
-  const streamText = (text: string, onComplete?: () => void) => {
-    setStreamedContent("");
-    let index = 0;
-    const charsPerInterval = 8;
-    const intervalMs = 30;
-
-    const interval = setInterval(() => {
-      if (index < text.length) {
-        setStreamedContent((prev) => prev + text.slice(index, index + charsPerInterval));
-        index += charsPerInterval;
-      } else {
-        clearInterval(interval);
-        setStreamedContent(text);
-        if (onComplete) onComplete();
-      }
-    }, intervalMs);
-
-    // Return cleanup function
-    return () => clearInterval(interval);
-  };
 
   const handleSend = async (message: string) => {
     setUserQuestion(message);
     setAssistantAnswer("");
-    setStreamedContent("");
     setIsAsking(true);
     setShowTyping(true);
 
@@ -62,19 +39,19 @@ export function QASection() {
       const data = await response.json();
       const answer = data.answer || "No response received.";
 
-      setShowTyping(false);
-      streamText(answer, () => {
+      // Small delay for natural feel, then show the complete formatted response
+      setTimeout(() => {
+        setShowTyping(false);
         setAssistantAnswer(answer);
         setIsAsking(false);
-      });
+      }, 300);
     } catch (error) {
       console.error("Error asking question:", error);
-      setShowTyping(false);
-      const errorMessage = "Sorry, I encountered an error. Please try again.";
-      streamText(errorMessage, () => {
-        setAssistantAnswer(errorMessage);
+      setTimeout(() => {
+        setShowTyping(false);
+        setAssistantAnswer("Sorry, I encountered an error. Please try again.");
         setIsAsking(false);
-      });
+      }, 300);
     }
   };
 
@@ -95,9 +72,9 @@ export function QASection() {
 
             {showTyping && <TypingIndicator />}
             
-            {streamedContent && (
-              <div className="w-full overflow-x-auto" data-testid="bubble-assistant">
-                <MarkdownRenderer content={streamedContent} />
+            {assistantAnswer && (
+              <div className="w-full overflow-x-auto animate-in fade-in slide-in-from-bottom-2 duration-300" data-testid="bubble-assistant">
+                <MarkdownRenderer content={assistantAnswer} />
               </div>
             )}
           </div>
@@ -110,13 +87,12 @@ export function QASection() {
         </div>
       )}
 
-      <div className="mb-12">
+      <div className="mb-4">
         <ChatInput
           onSend={handleSend}
           onRefresh={() => {
             setUserQuestion("");
             setAssistantAnswer("");
-            setStreamedContent("");
           }}
           disabled={isAsking}
         />
