@@ -8,19 +8,23 @@ interface Experience {
 
 interface ExperienceSectionProps {
   experiences: Experience[];
-  content: string;
+  showTitle?: boolean;
 }
 
-export function ExperienceSection({ experiences, content }: ExperienceSectionProps) {
+export function ExperienceSection({ experiences, showTitle = true }: ExperienceSectionProps) {
+  if (experiences.length === 0) return null;
+  
   return (
     <section data-testid="section-experience">
-      <h2 className="text-2xl font-semibold text-foreground mb-6">Experience</h2>
-      <div className="text-sm leading-relaxed text-foreground whitespace-pre-line">
-        {content}
-      </div>
-      <div className="space-y-6 mt-6">
+      {showTitle && <h2 className="text-2xl font-semibold text-foreground mb-6">Experience</h2>}
+      <div className="space-y-6">
         {experiences.map((exp, index) => (
-          <div key={exp.id} className="border-l-2 border-border pl-4" data-testid={`experience-${index}`}>
+          <div 
+            key={exp.id} 
+            className="border-l-2 border-border pl-4 animate-in fade-in slide-in-from-left-2 duration-300" 
+            style={{ animationDelay: `${index * 50}ms` }}
+            data-testid={`experience-${index}`}
+          >
             <h3 className="text-base font-semibold text-foreground">{exp.role}</h3>
             <div className="text-sm text-muted-foreground mb-2">
               {exp.company} · {exp.period}
