@@ -25,15 +25,16 @@ Preferred communication style: Simple, everyday language.
 - Component path aliases configured for clean imports (`@/components`, `@/lib`, etc.)
 
 **Key Design Patterns**
-- **ChatGPT-Like Streaming**: Character-by-character content reveal with human-readable pacing (1 character every 25ms, 40 chars/sec)
+- **ChatGPT-Like Streaming**: Character-by-character content reveal with fast pacing (1 character every 10ms, 100 chars/sec)
   - About Me section streams character-by-character
   - Experience descriptions stream character-by-character (one experience at a time)
   - Q&A responses stream character-by-character
+  - Consistent 10ms timing across all sections for smooth, dynamic feel
 - **No Auto-Scrolling**: Page stays at top during streaming - user controls all scrolling behavior
-- **Scroll-to-Bottom Button**: ChatGPT-style floating button (centered at bottom) with scroll event listener detection
-  - Shows when content extends beyond viewport
-  - Hides when user reaches bottom (within 50px threshold)
-  - Updates visibility during streaming as content grows
+- **Scroll-to-Bottom Button**: ChatGPT-style floating button (centered at bottom) with IntersectionObserver detection
+  - Uses sentinel element (`#bottom-sentinel`) at page bottom
+  - Shows only when sentinel is NOT visible (content actually below viewport)
+  - No heuristic-based "near bottom" logic - precise viewport detection
   - Smooth fade transitions with `opacity-0`/`opacity-100`
 - **Inline Pulsing Cursor**: Visual indicator during streaming appears horizontally (inline) with text as it grows
   - Cursor positioned inline using `inline-block` span with `align-middle`
@@ -50,6 +51,7 @@ Preferred communication style: Simple, everyday language.
 **ChatGPT-Style Chat Interface**:
 - **In-Flow Input Bar**: Chat input positioned in page flow (not fixed) with clean one-container design
   - All elements in single rounded container: refresh icon, plus button, textarea, character counter, mic icon (hidden on mobile), send button
+  - Refresh button resets chat state without page reload (clears Q&A, restores suggestions)
   - Subtle border and background, not blocky or loud
   - No individual white boxes for inner elements
 - **Auto-Expanding Textarea**: Input expands vertically as user types (max 200px height), adds scrollbar when exceeded
@@ -58,17 +60,22 @@ Preferred communication style: Simple, everyday language.
   - Enter to send, Shift+Enter for new line
 - **Visual Viewport API**: Mobile keyboard handling - input bar lifts above keyboard automatically
   - Detects keyboard height: `window.innerHeight - visualViewport.height`
+  - Uses requestAnimationFrame batching to prevent jumps during keyboard animation
+  - 50px threshold ensures only real keyboard events trigger movement
   - Applies `translateY()` transform to lift bar above keyboard
   - Smooth 0.2s ease-out transitions
+  - Bar stays anchored above keyboard until dismissed
   - No scroll hacks or artificial padding
 - **Contextual Prompt Suggestions**: 
   - Uses IntersectionObserver with strict -100px rootMargin for accurate bottom detection
-  - Pills visible only when: (1) at bottom (sentinel 100px+ into viewport), (2) input not focused, (3) not typing
+  - Pills stay visible while user types - only hide after message is sent
+  - `hasSentMessage` state tracks whether to show suggestions
+  - Pills reappear when chat is reset via reload button
   - No outer box container - just pills with subtle borders and rounded corners
-  - Pills wrap to multiple lines on mobile with proper spacing
-  - Smooth fade and slide animations (300ms ease-in-out)
+  - Pills wrap to multiple lines on mobile with proper spacing (px-2 mobile padding)
+  - Smooth fade and slide animations (300ms ease-in-out with 8px translateY)
+  - Height animates to 0 when hidden to prevent layout jumps
   - Clicking suggestion populates textarea and sends message
-  - Pills reappear after conversations when scrolled back to bottom
 - **Responsive Design**: 
   - Mic icon hidden on screens < 640px (sm breakpoint)
   - Icons never wrap to second row
