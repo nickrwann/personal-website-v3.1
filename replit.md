@@ -49,46 +49,68 @@ Preferred communication style: Simple, everyday language.
   - Uses null vs empty string distinction: `streamedDescription === null` means use original (completed/JSX), `streamedDescription === ''` means streaming started but no characters yet
 
 **ChatGPT-Style Chat Interface**:
-- **Unified ChatInputGroup Component**: Single component wrapping both suggestion pills and input bar
-  - Ensures pills and input bar move together as one unit during keyboard interactions
-  - Applies keyboard offset transform to entire group (pills stay above input bar)
-  - Two stable states: resting at bottom of page, or lifted above mobile keyboard
+- **Single Rounded Card Composer**: Mobile-first design wrapping both pills and input in one unified card
+  - Card uses `rounded-3xl` for large ChatGPT-style corner radius
+  - Background: `bg-card` with `border-card-border` adapting to theme
+  - `overflow-hidden` ensures pills and input respect rounded corners
+  - Safe area inset: `paddingBottom: 'max(1rem, env(safe-area-inset-bottom))'` for iPhone home bar
+  - Entire card lifts together during mobile keyboard interactions
+  - Two stable states: resting at bottom with safe area padding, or lifted above mobile keyboard
   - No jumping, no overlap, no viewport issues
-- **Chat Input Bar Layout**: Clean single-row design positioned in page flow (not fixed)
-  - Layout: refresh icon → textarea → character counter → send button (all vertically centered)
-  - Refresh button resets chat state without page reload (clears Q&A, restores suggestions)
-  - Character counter positioned inline (not absolute) for better balance
-  - Send button with perfectly centered paper airplane icon
+- **Vertical Stacked Suggestion Pills**: Three suggestions displayed in vertical stack inside card
+  - Pills: "Why should I hire Nick?", "What is Nick best at?", "What is Nick's coolest project?"
+  - Each pill is full width (`w-full`) with uniform padding (`px-4 py-3`)
+  - Rendered as Button components (variant="secondary") for consistency
+  - Rounded corners (`rounded-2xl`) matching card style
+  - Text left-aligned (`text-left justify-start`) for better readability
+  - Spacing: `space-y-2` between pills, `px-4 pt-4 pb-3` section padding
+  - Visibility: show when `!hasSentMessage`, hide after send, reappear on refresh
+  - **Click behavior**: Populates textarea and focuses (doesn't immediately send)
+    - User can review/edit question before sending
+    - Pills stay visible while user types (only hide after actual send)
+- **Separator Line**: Conditional divider between pills and input row
+  - Only appears when pills are visible
+  - Class: `border-t border-border mx-4` for subtle separation
+  - Provides visual distinction between pill section and input row
+- **Input Row Layout**: Clean single row at bottom of card (all vertically centered)
+  - Layout: refresh icon → textarea → character counter → send button
+  - Padding: `p-3` for breathing room
+  - Refresh button: resets chat state without page reload (no `window.location.reload`)
+    - Clears Q&A bubbles, streaming state, input value
+    - Restores suggestion pills by setting `hasSentMessage = false`
+  - Character counter: inline element showing "X/250"
+  - Send button: circular (`rounded-full`) with paper airplane icon
   - Auto-expanding textarea (max 200px height), adds scrollbar when exceeded
   - Enter to send, Shift+Enter for new line
   - Character limit: 0/250
-- **Contextual Prompt Suggestions**: 
-  - Always positioned directly above input bar (3-unit bottom margin)
-  - Visibility: show when `!hasSentMessage`, hide after message sent
-  - Pills reappear when chat is reset via refresh button
-  - Pills stay visible while user types (only hide after send)
-  - Pills wrap to multiple lines on mobile with proper spacing
-  - No outer container - individual rounded pill chips
-  - Clicking suggestion populates textarea and sends message
 - **Mobile Keyboard Handling (Visual Viewport API)**:
   - Detects keyboard height: `window.innerHeight - visualViewport.height`
   - Uses requestAnimationFrame batching to prevent jumps during keyboard animation
   - 50px threshold ensures only real keyboard events trigger movement
-  - Applies `translateY(-${keyboardOffset}px)` to entire ChatInputGroup
+  - Applies `translateY(-${keyboardOffset}px)` to entire card (pills + input together)
   - No transition during keyboard opening (prevents lag), smooth 0.2s ease-out when closing
   - Uses ref pattern (`keyboardOffsetRef`) to avoid stale closures in scroll handler
   - **Scroll-to-dismiss**: Any upward scroll while keyboard open immediately blurs textarea
     - Scroll handler reads latest keyboard offset via ref (no timing delays)
     - Deterministic: first upward scroll always dismisses keyboard
-    - After blur, bar returns to resting position at bottom of page
+    - After blur, card returns to resting position at bottom of page
   - No auto-scroll of page content when focusing input
-  - Bar stays anchored above keyboard until user scrolls up or keyboard closes
+  - Card stays anchored above keyboard until user scrolls up or keyboard closes
+- **Interaction Flow**:
+  1. Click pill → textarea populates → focus → user can review/edit → user sends
+  2. Send → pills hide → question bubble shows → answer streams with cursor
+  3. Refresh → clear Q&A → pills reappear → ready for new question
 - **Responsive Design**: 
-  - Icons never wrap to second row
+  - Card adapts to viewport width while maintaining rounded corners
+  - Pills stack vertically with uniform width across all screen sizes
+  - Input row icons never wrap to second row
   - Readable font sizes maintained on all screen sizes
   - Textarea prioritized for horizontal space
-  - Pills wrap cleanly on narrow mobile screens
+  - Safe area insets prevent overlap with iPhone home bar
 - **Theme Support**: All components work correctly in both light and dark mode with proper contrast
+  - Card background and borders adapt to theme
+  - Pills (Button variant="secondary") adapt to theme
+  - Separator line uses theme-aware border color
 
 ### Backend Architecture
 
