@@ -23,7 +23,12 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
         prose-li:my-1 prose-li:text-foreground
         prose-blockquote:border-l-4 prose-blockquote:border-border prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-muted-foreground
         prose-hr:border-border prose-hr:my-6
-        text-foreground"
+        prose-table:w-full prose-table:border-collapse prose-table:my-4
+        prose-thead:border-b prose-thead:border-border
+        prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:font-semibold prose-th:text-foreground
+        prose-td:px-3 prose-td:py-2 prose-td:border-b prose-td:border-border prose-td:text-foreground
+        prose-tr:border-b prose-tr:border-border
+        text-foreground overflow-x-auto"
       data-testid="markdown-content">
       <ReactMarkdown
         components={{

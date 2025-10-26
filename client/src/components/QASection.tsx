@@ -95,7 +95,7 @@ export function QASection() {
             {showTyping && <TypingIndicator />}
             
             {streamedContent && (
-              <div className="max-w-full md:max-w-[700px]" data-testid="bubble-assistant">
+              <div className="w-full overflow-x-auto" data-testid="bubble-assistant">
                 <MarkdownRenderer content={streamedContent} />
               </div>
             )}
