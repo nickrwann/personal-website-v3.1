@@ -1,184 +1,167 @@
 import { useState, useRef, useEffect } from "react";
 import { RefreshCw, Plus, Mic, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { ExpandingTextarea } from "./ExpandingTextarea";
 
 interface ChatInputProps {
   onSend: (message: string) => void;
-  onRefresh: () => void;
+  onRefresh?: () => void;
   disabled?: boolean;
+  onFocusChange?: (isFocused: boolean) => void;
+  inputValue?: string;
+  onInputChange?: (value: string) => void;
 }
 
 const MAX_CHARS = 250;
 
-export function ChatInput({ onSend, onRefresh, disabled }: ChatInputProps) {
+export function ChatInput({ 
+  onSend, 
+  onRefresh, 
+  disabled,
+  onFocusChange,
+  inputValue,
+  onInputChange 
+}: ChatInputProps) {
   const [input, setInput] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Use controlled value if provided, otherwise use internal state
+  const value = inputValue !== undefined ? inputValue : input;
+  const setValue = inputValue !== undefined ? (onInputChange || (() => {})) : setInput;
 
   const handleSend = () => {
-    if (input.trim() && input.length <= MAX_CHARS && !disabled) {
-      onSend(input.trim());
-      setInput("");
+    if (value.trim() && value.length <= MAX_CHARS && !disabled) {
+      onSend(value.trim());
+      setValue("");
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !disabled) {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
       handleSend();
     }
   };
 
   const handleFocus = () => {
-    // On mobile, ensure input scrolls into view above keyboard
-    // Multiple strategies for cross-browser compatibility
-    
-    // Strategy 1: Immediate scroll with delay for keyboard animation
-    setTimeout(() => {
-      if (inputRef.current) {
-        // Scroll the input to the top of the viewport with extra space
-        inputRef.current.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start',
-          inline: 'nearest'
-        });
-      }
-    }, 100);
-
-    // Strategy 2: Second attempt after keyboard animation
-    setTimeout(() => {
-      if (inputRef.current && document.activeElement === inputRef.current) {
-        inputRef.current.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start',
-          inline: 'nearest'
-        });
-      }
-    }, 400);
-
-    // Strategy 3: Final attempt after keyboard is fully shown
-    setTimeout(() => {
-      if (inputRef.current && document.activeElement === inputRef.current) {
-        inputRef.current.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start',
-          inline: 'nearest'
-        });
-      }
-    }, 700);
+    onFocusChange?.(true);
   };
 
-  // Handle viewport changes when keyboard appears (Visual Viewport API)
-  useEffect(() => {
-    if (typeof window !== 'undefined' && 'visualViewport' in window) {
-      const handleViewportResize = () => {
-        // If input is focused and viewport resized (keyboard appeared/disappeared)
-        if (document.activeElement === inputRef.current) {
-          setTimeout(() => {
-            if (inputRef.current) {
-              inputRef.current.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start',
-                inline: 'nearest'
-              });
-            }
-          }, 150);
-        }
-      };
+  const handleBlur = () => {
+    onFocusChange?.(false);
+  };
 
-      window.visualViewport?.addEventListener('resize', handleViewportResize);
-      return () => window.visualViewport?.removeEventListener('resize', handleViewportResize);
-    }
-  }, []);
-  
-  // Additional safeguard: handle window resize events (for older browsers)
+  // Visual Viewport API for mobile keyboard handling
   useEffect(() => {
-    let resizeTimer: NodeJS.Timeout;
-    
-    const handleWindowResize = () => {
-      // Debounce resize events
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        if (document.activeElement === inputRef.current && inputRef.current) {
-          inputRef.current.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start',
-            inline: 'nearest'
-          });
-        }
-      }, 200);
+    if (typeof window === 'undefined' || !('visualViewport' in window)) {
+      return;
+    }
+
+    const handleViewportChange = () => {
+      const viewport = window.visualViewport;
+      if (!viewport) return;
+
+      // Calculate keyboard height
+      const keyboardHeight = window.innerHeight - viewport.height;
+      
+      // Set offset when keyboard is visible
+      setKeyboardOffset(keyboardHeight);
     };
 
-    window.addEventListener('resize', handleWindowResize);
+    window.visualViewport?.addEventListener('resize', handleViewportChange);
+    window.visualViewport?.addEventListener('scroll', handleViewportChange);
+
     return () => {
-      window.removeEventListener('resize', handleWindowResize);
-      clearTimeout(resizeTimer);
+      window.visualViewport?.removeEventListener('resize', handleViewportChange);
+      window.visualViewport?.removeEventListener('scroll', handleViewportChange);
     };
   }, []);
 
   return (
-    <div data-testid="container-chat-input">
-      <div className="bg-card border border-card-border rounded-lg p-2.5">
-        <div className="flex items-center gap-2">
+    <div
+      ref={containerRef}
+      className="w-full"
+      style={{
+        transform: keyboardOffset > 0 ? `translateY(-${keyboardOffset}px)` : 'translateY(0)',
+        transition: 'transform 0.2s ease-out',
+      }}
+      data-testid="container-chat-input"
+    >
+      <div className="bg-card border border-card-border rounded-lg shadow-sm">
+        <div className="flex items-end gap-1.5 p-2">
+          {/* Refresh icon - far left */}
           <Button
             size="icon"
             variant="ghost"
-            onClick={onRefresh}
+            onClick={onRefresh || (() => window.location.reload())}
             disabled={disabled}
             data-testid="button-refresh"
-            className="flex-shrink-0 hover-elevate"
+            className="flex-shrink-0 hover-elevate self-end h-9 w-9"
           >
             <RefreshCw className="h-4 w-4" />
           </Button>
 
+          {/* Plus button */}
           <Button
             size="icon"
             variant="ghost"
             disabled={disabled}
             data-testid="button-plus"
-            className="flex-shrink-0 hover-elevate"
+            className="flex-shrink-0 hover-elevate self-end h-9 w-9"
             onClick={() => console.log("Plus button clicked")}
           >
             <Plus className="h-4 w-4" />
           </Button>
 
-          <div className="flex-1 relative">
-            <Input
-              ref={inputRef}
-              value={input}
-              onChange={(e) => {
-                if (e.target.value.length <= MAX_CHARS) {
-                  setInput(e.target.value);
-                }
-              }}
-              onKeyPress={handleKeyPress}
-              onFocus={handleFocus}
-              placeholder="Ask anything about Nick..."
-              disabled={disabled}
-              data-testid="input-question"
-              className="pr-16 border-none focus-visible:ring-0 focus-visible:ring-offset-0"
-            />
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground" data-testid="text-char-counter">
-              {input.length} / {MAX_CHARS}
+          {/* Expanding textarea with character counter */}
+          <div className="flex-1 relative min-w-0">
+            <div className="pr-14">
+              <ExpandingTextarea
+                ref={textareaRef}
+                value={value}
+                onChange={(val) => {
+                  if (val.length <= MAX_CHARS) {
+                    setValue(val);
+                  }
+                }}
+                onKeyDown={handleKeyDown}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                placeholder="Ask anything about Nick..."
+                disabled={disabled}
+                maxLength={MAX_CHARS}
+                maxHeight={200}
+              />
+            </div>
+            <div 
+              className="absolute right-0 bottom-1 text-xs text-muted-foreground pointer-events-none select-none whitespace-nowrap" 
+              data-testid="text-char-counter"
+            >
+              {value.length}/{MAX_CHARS}
             </div>
           </div>
 
+          {/* Mic icon - hidden on narrow screens */}
           <Button
             size="icon"
             variant="ghost"
             disabled={disabled}
             data-testid="button-mic"
-            className="flex-shrink-0 hover-elevate"
+            className="flex-shrink-0 hover-elevate self-end h-9 w-9 hidden sm:flex"
             onClick={() => console.log("Mic button clicked")}
           >
             <Mic className="h-4 w-4" />
           </Button>
 
+          {/* Send button - circular pill on far right */}
           <Button
             size="icon"
             onClick={handleSend}
-            disabled={disabled || !input.trim() || input.length > MAX_CHARS}
+            disabled={disabled || !value.trim() || value.length > MAX_CHARS}
             data-testid="button-send"
-            className="flex-shrink-0 bg-send-button hover:bg-send-button/90 text-send-button-foreground rounded-full"
+            className="flex-shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full self-end h-9 w-9"
           >
             <Send className="h-4 w-4" />
           </Button>

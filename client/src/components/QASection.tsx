@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { TypingIndicator } from "./TypingIndicator";
-import { FixedChatInput } from "./FixedChatInput";
+import { ChatInput } from "./ChatInput";
 import { ContextualSuggestions } from "./ContextualSuggestions";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 
@@ -12,7 +12,11 @@ export function QASection() {
   const [isAsking, setIsAsking] = useState(false);
   const [showTyping, setShowTyping] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const [inputValue, setInputValue] = useState("");
   const inputRefreshTrigger = useRef(0);
+
+  // User is typing if there's text in the input
+  const isTyping = inputValue.length > 0;
 
   const streamText = (text: string) => {
     setStreamedText("");
@@ -43,6 +47,7 @@ export function QASection() {
     setStreamedText("");
     setIsAsking(true);
     setShowTyping(true);
+    setInputValue(""); // Clear input after sending
 
     try {
       const response = await fetch("/api/ask", {
@@ -80,8 +85,9 @@ export function QASection() {
   };
 
   const handleSuggestionClick = (text: string) => {
+    setInputValue(text);
+    setIsInputFocused(true);
     handleSend(text);
-    inputRefreshTrigger.current += 1;
   };
 
   return (
@@ -116,21 +122,24 @@ export function QASection() {
       {/* Sentinel element for IntersectionObserver - marks end of content stream */}
       <div id="qa-sentinel" className="h-4" data-testid="sentinel-qa" />
 
-      {/* Contextual suggestions - only visible when at bottom and not typing */}
+      {/* Contextual suggestions - only visible when at bottom and not typing/focused */}
       {!userQuestion && (
         <ContextualSuggestions
           onSuggestionClick={handleSuggestionClick}
           disabled={isAsking}
           isInputFocused={isInputFocused}
+          isTyping={isTyping}
           sentinelId="qa-sentinel"
         />
       )}
 
-      {/* Fixed chat input at bottom */}
-      <FixedChatInput
+      {/* Chat input bar */}
+      <ChatInput
         onSend={handleSend}
         disabled={isAsking}
         onFocusChange={setIsInputFocused}
+        inputValue={inputValue}
+        onInputChange={setInputValue}
       />
     </>
   );

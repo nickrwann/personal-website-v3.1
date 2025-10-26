@@ -5,6 +5,7 @@ interface ContextualSuggestionsProps {
   onSuggestionClick: (text: string) => void;
   disabled?: boolean;
   isInputFocused: boolean;
+  isTyping: boolean;
   sentinelId: string;
 }
 
@@ -12,21 +13,24 @@ export function ContextualSuggestions({
   onSuggestionClick, 
   disabled, 
   isInputFocused,
+  isTyping,
   sentinelId 
 }: ContextualSuggestionsProps) {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isAtBottom, setIsAtBottom] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
+
+  // Determine visibility: at bottom AND not focused AND not typing
+  const isVisible = isAtBottom && !isInputFocused && !isTyping;
 
   useEffect(() => {
     const sentinel = document.getElementById(sentinelId);
     if (!sentinel) return;
 
-    // Create IntersectionObserver
+    // Create IntersectionObserver to detect when user is at bottom
     observerRef.current = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        // Show suggestions only when sentinel is visible AND input is not focused
-        setIsVisible(entry.isIntersecting && !isInputFocused);
+        setIsAtBottom(entry.isIntersecting);
       },
       {
         root: null,
@@ -42,34 +46,22 @@ export function ContextualSuggestions({
         observerRef.current.disconnect();
       }
     };
-  }, [sentinelId, isInputFocused]);
-
-  // Hide when input is focused or user types
-  useEffect(() => {
-    if (isInputFocused) {
-      setIsVisible(false);
-    }
-  }, [isInputFocused]);
+  }, [sentinelId]);
 
   return (
     <div
-      className="fixed left-0 right-0 z-40 transition-all duration-300 ease-in-out"
+      className="w-full mb-3 transition-all duration-300 ease-in-out"
       style={{
-        bottom: 'calc(80px + env(safe-area-inset-bottom, 0px))',
         opacity: isVisible ? 1 : 0,
         pointerEvents: isVisible ? 'auto' : 'none',
-        transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+        transform: isVisible ? 'translateY(0)' : 'translateY(10px)',
       }}
       data-testid="container-contextual-suggestions"
     >
-      <div className="max-w-3xl mx-auto px-4">
-        <div className="bg-background/95 backdrop-blur-sm rounded-lg p-2 border border-border">
-          <SuggestionPills 
-            onSuggestionClick={onSuggestionClick} 
-            disabled={disabled} 
-          />
-        </div>
-      </div>
+      <SuggestionPills 
+        onSuggestionClick={onSuggestionClick} 
+        disabled={disabled} 
+      />
     </div>
   );
 }

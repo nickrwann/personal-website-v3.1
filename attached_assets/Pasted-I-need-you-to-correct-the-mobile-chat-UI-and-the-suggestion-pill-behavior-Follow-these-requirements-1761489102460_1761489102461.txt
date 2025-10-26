@@ -1,0 +1,76 @@
+I need you to correct the mobile chat UI and the suggestion pill behavior. Follow these requirements exactly.
+
+Chat input bar visual style
+1.1 Use the older clean chat input style I had before
+
+One rounded container with subtle border and subtle background
+
+Inside that container: refresh icon on the far left, then the fake plus button, then the expanding text area, then the character counter, then the fake mic icon, then the send button in a circular pill on the far right
+
+Keep that send button style on the far right
+1.2 Do not wrap individual inner elements in their own white boxes. All of those live in one shared bar
+1.3 The text area should have enough horizontal space so the placeholder text does not get squished on mobile
+1.4 The bar should not look like a big loud white rectangle. Go back to the softer look that matches the desktop style
+
+Positioning and keyboard behavior
+2.1 Right now the bar is sitting in the page flow under the content, not fixed to the viewport. Keep that behavior for now
+2.2 On mobile when the keyboard opens, the chat input bar must move up so I can see what I am typing. It must not sit under the keyboard
+2.3 To do this: use the Visual Viewport API
+
+Listen to window.visualViewport resize and scroll
+
+Compute keyboardHeight = window.innerHeight - visualViewport.height
+
+When keyboardHeight > 0, apply a bottom offset or translateY so the bar is visually above the keyboard
+
+When keyboardHeight === 0, reset it back to normal
+2.4 Do not add giant bottom padding to the page to fake this. Remove that old approach
+
+Text area behavior
+3.1 The text input should be a <textarea> that starts at one line and grows vertically as I type
+3.2 Set a max height (around 200px). If I type more than that, it should scroll internally instead of pushing the whole layout everywhere
+3.3 The rest of the bar should stretch vertically in a controlled way while the textarea grows. Do not let layout jump around on mobile
+
+Suggestion pills visual style
+4.1 Remove the big outer box / panel behind the suggestion pills. I do not want that container
+4.2 Each suggestion should just be a pill chip: light border, subtle background, rounded corners, readable text
+4.3 The pills should wrap to multiple lines on mobile if they need to, with vertical spacing between lines so the pills never collide
+4.4 Text in pills must not get clipped or crushed
+
+Suggestion pill logic
+5.1 Pills should only be visible when:
+
+The user is at the bottom of the content
+
+The input is not focused
+
+The user is not actively typing
+5.2 When the input is focused and the keyboard is up, hide the pills
+5.3 When the user scrolls up, hide the pills
+5.4 When the user scrolls back to the bottom and is not typing, fade the pills back in above the chat bar
+5.5 When a pill is tapped, its text should populate the textarea and focus the textarea
+
+Responsive rules
+6.1 Do not allow the icons to wrap onto a second row. The bar should always stay one row of icons plus the textarea
+6.2 On very small screens, if something has to give, hide the mic icon first. The mic icon is optional. The text area should not collapse to a tiny sliver
+6.3 Do not shrink font size to unreadable levels. Preserve normal readable font size for both the textarea and the pills
+6.4 None of the text in the chat bar or pills should be visibly squished like in the screenshots I sent
+
+Theme
+7.1 All of this needs to render correctly in light and dark mode. Borders, backgrounds, and text colors need correct contrast in both themes
+7.2 Do not change my current theme tokens. Just apply them consistently to the restored bar and pill styles
+
+Fix these current problems
+8.1 On mobile, the chat input bar goes under the keyboard. Fix that with the viewport offset logic above
+8.2 The suggestion pills currently sit in a boxed section. Remove that box and only render the pills themselves
+8.3 The suggestion pills plus the bar layout is causing text to get squeezed on mobile. Fix the flex rules so the textarea keeps priority and the mic icon can disappear on narrow screens
+8.4 The current mobile bar styling is too loud and blocky. Revert back to the earlier cleaner styling with subtle border, rounded shape, refresh icon on the far left, plus icon next, textarea in the middle, character counter, mic icon, and send button on the far right
+
+Deliverables
+9.1 Update the JSX / TSX structure for both the suggestion pills container and the chat input bar
+9.2 Add the Visual Viewport listener logic so the bar lifts above the keyboard on mobile and drops back down when the keyboard closes
+9.3 Add responsive behavior so the mic icon can hide on narrow screens, the textarea stays readable, and the icons never wrap to a second line
+9.4 Make sure pills only render in the state described in section 5 and that they no longer live in a box container
+
+Goal:
+Make this behave like a clean ChatGPT style footer input with optional suggestion pills. The bar should look like the older version I liked. The pills should sit above it without a surrounding box. On mobile, I should be able to see what I am typing, and nothing should crush or clip text.
