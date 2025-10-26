@@ -25,11 +25,11 @@ Preferred communication style: Simple, everyday language.
 - Component path aliases configured for clean imports (`@/components`, `@/lib`, etc.)
 
 **Key Design Patterns**
-- **ChatGPT-Like Streaming**: Character-by-character content reveal with fast pacing (1 character every 10ms, 100 chars/sec)
+- **ChatGPT-Like Streaming**: Character-by-character content reveal with fast pacing (1 character every 5ms, 200 chars/sec)
   - About Me section streams character-by-character
   - Experience descriptions stream character-by-character (one experience at a time)
   - Q&A responses stream character-by-character
-  - Consistent 10ms timing across all sections for smooth, dynamic feel
+  - Consistent 5ms timing across all sections for smooth, dynamic feel
 - **No Auto-Scrolling**: Page stays at top during streaming - user controls all scrolling behavior
 - **Scroll-to-Bottom Button**: ChatGPT-style floating button (centered at bottom) with IntersectionObserver detection
   - Uses sentinel element (`#bottom-sentinel`) at page bottom

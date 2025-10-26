@@ -53,8 +53,8 @@ export default function Home() {
     let timeoutId: NodeJS.Timeout;
     let isActive = true; // Track if effect is still active
 
-    // Human-readable streaming speed: 1 character every 10ms (100 chars/sec)
-    const charDelay = 10;
+    // Human-readable streaming speed: 1 character every 5ms (200 chars/sec)
+    const charDelay = 5;
 
     // Stream the About section character by character
     const streamAbout = () => {
