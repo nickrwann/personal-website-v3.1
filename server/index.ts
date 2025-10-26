@@ -31,12 +31,18 @@ app.use((req, res, next) => {
     const duration = Date.now() - start;
     if (path.startsWith("/api")) {
       let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
+      
+      // Log request body for better debugging
+      if (req.body && Object.keys(req.body).length > 0) {
+        logLine += ` :: Request: ${JSON.stringify(req.body)}`;
+      }
+      
       if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+        logLine += ` :: Response: ${JSON.stringify(capturedJsonResponse)}`;
       }
 
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
+      if (logLine.length > 200) {
+        logLine = logLine.slice(0, 199) + "…";
       }
 
       log(logLine);
