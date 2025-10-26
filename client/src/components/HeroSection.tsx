@@ -15,9 +15,17 @@ export function HeroSection() {
         Nick Wanner
       </h1>
       
-      <p className="text-lg md:text-xl text-muted-foreground mb-6 whitespace-nowrap" data-testid="text-subtitle">
+      {/* Large screens: one line */}
+      <p className="hidden md:block text-lg md:text-xl text-muted-foreground mb-6 px-4 whitespace-nowrap" data-testid="text-subtitle">
         AI Systems Engineer & Creative Problem Solver
       </p>
+      
+      {/* Small screens: three lines */}
+      <div className="md:hidden text-lg text-muted-foreground mb-6 px-4 space-y-1" data-testid="text-subtitle-mobile">
+        <p className="text-center">AI Systems Engineer</p>
+        <p className="text-center">&</p>
+        <p className="text-center">Creative Problem Solver</p>
+      </div>
       
       <div className="flex flex-row flex-wrap justify-center gap-4 text-sm text-muted-foreground">
         <div className="flex items-center gap-2 whitespace-nowrap" data-testid="text-location">
