@@ -1,7 +1,6 @@
 import { useState, useRef } from "react";
 import { TypingIndicator } from "./TypingIndicator";
-import { ChatInput } from "./ChatInput";
-import { ContextualSuggestions } from "./ContextualSuggestions";
+import { ChatInputGroup } from "./ChatInputGroup";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 
 export function QASection() {
@@ -127,24 +126,15 @@ export function QASection() {
         )}
       </section>
 
-      {/* Sentinel element for IntersectionObserver - marks end of content stream */}
-      <div id="qa-sentinel" className="h-2" data-testid="sentinel-qa" />
-
-      {/* Contextual suggestions - visibility controlled by internal logic */}
-      <ContextualSuggestions
-        onSuggestionClick={handleSuggestionClick}
-        disabled={isAsking}
-        hasSentMessage={hasSentMessage}
-        sentinelId="qa-sentinel"
-      />
-
-      {/* Chat input bar */}
-      <ChatInput
+      {/* Unified chat input group with suggestions */}
+      <ChatInputGroup
         onSend={handleSend}
         onRefresh={handleReset}
+        onSuggestionClick={handleSuggestionClick}
         disabled={isAsking}
         inputValue={inputValue}
         onInputChange={setInputValue}
+        hasSentMessage={hasSentMessage}
       />
     </>
   );
