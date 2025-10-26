@@ -33,7 +33,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           "X-Title": "NW Portfolio Website"
         },
         body: JSON.stringify({
-          model: "mistralai/mistral-small",
+          model: "mistralai/mistral-small-3.2-24b-instruct:free",
           messages: [
             { role: "system", content: SYSTEM_PROMPT },
             { role: "user", content: question }
