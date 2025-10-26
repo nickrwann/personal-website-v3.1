@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NWBadge } from "@/components/NWBadge";
 import { HeroSection } from "@/components/HeroSection";
 import { AboutSection } from "@/components/AboutSection";
@@ -10,6 +10,13 @@ export default function Home() {
   const [streamedAbout, setStreamedAbout] = useState("");
   const [streamedExperiences, setStreamedExperiences] = useState("");
   const [isStreaming, setIsStreaming] = useState(true);
+  const contentEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isStreaming && contentEndRef.current) {
+      contentEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  }, [streamedAbout, streamedExperiences, isStreaming]);
 
   useEffect(() => {
     const streamContent = async () => {
@@ -48,6 +55,7 @@ export default function Home() {
           <HeroSection />
           <AboutSection content={streamedAbout} />
           <ExperienceSection experiences={experiences} content={streamedExperiences} />
+          <div ref={contentEndRef} />
           <QASection />
         </div>
       </div>

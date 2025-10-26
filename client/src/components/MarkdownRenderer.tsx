@@ -6,34 +6,41 @@ interface MarkdownRendererProps {
 
 export function MarkdownRenderer({ content }: MarkdownRendererProps) {
   return (
-    <div className="prose prose-sm md:prose-base max-w-none
-        prose-headings:font-semibold prose-headings:mb-3 prose-headings:mt-6
-        prose-h1:text-2xl prose-h1:mt-8 first:prose-h1:mt-0
-        prose-h2:text-xl prose-h2:mt-8 first:prose-h2:mt-0
-        prose-h3:text-lg prose-h3:mt-6
-        prose-h4:text-base prose-h4:mt-4
-        prose-p:mb-4 prose-p:leading-relaxed prose-p:text-foreground
-        prose-strong:font-semibold prose-strong:text-foreground
-        prose-em:italic prose-em:text-foreground
-        prose-a:text-primary prose-a:underline hover:prose-a:no-underline
-        prose-code:text-foreground prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono prose-code:before:content-[''] prose-code:after:content-['']
-        prose-pre:bg-muted prose-pre:p-4 prose-pre:rounded-lg prose-pre:overflow-x-auto prose-pre:text-sm
-        prose-ul:my-3 prose-ul:list-disc prose-ul:pl-6
-        prose-ol:my-3 prose-ol:list-decimal prose-ol:pl-6
-        prose-li:my-1 prose-li:text-foreground
-        prose-blockquote:border-l-4 prose-blockquote:border-border prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-muted-foreground
-        prose-hr:border-border prose-hr:my-6
-        prose-table:w-full prose-table:border-collapse prose-table:my-4
-        prose-thead:border-b prose-thead:border-border
-        prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:font-semibold prose-th:text-foreground
-        prose-td:px-3 prose-td:py-2 prose-td:border-b prose-td:border-border prose-td:text-foreground
-        prose-tr:border-b prose-tr:border-border
-        text-foreground overflow-x-auto"
-      data-testid="markdown-content">
+    <div className="text-foreground leading-relaxed" data-testid="markdown-content">
       <ReactMarkdown
         components={{
+          p: ({ node, ...props }) => (
+            <p className="mb-4 leading-relaxed" {...props} />
+          ),
+          strong: ({ node, ...props }) => (
+            <strong className="font-semibold" {...props} />
+          ),
+          em: ({ node, ...props }) => (
+            <em className="italic" {...props} />
+          ),
           a: ({ node, ...props }) => (
-            <a {...props} target="_blank" rel="noopener noreferrer" />
+            <a className="text-primary underline hover:no-underline" {...props} target="_blank" rel="noopener noreferrer" />
+          ),
+          code: ({ node, ...props }) => (
+            <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono" {...props} />
+          ),
+          ul: ({ node, ...props }) => (
+            <ul className="my-3 list-disc pl-6" {...props} />
+          ),
+          ol: ({ node, ...props }) => (
+            <ol className="my-3 list-decimal pl-6" {...props} />
+          ),
+          li: ({ node, ...props }) => (
+            <li className="my-1" {...props} />
+          ),
+          h1: ({ node, ...props }) => (
+            <h1 className="text-2xl font-semibold mb-3 mt-8 first:mt-0" {...props} />
+          ),
+          h2: ({ node, ...props }) => (
+            <h2 className="text-xl font-semibold mb-3 mt-8 first:mt-0" {...props} />
+          ),
+          h3: ({ node, ...props }) => (
+            <h3 className="text-lg font-semibold mb-3 mt-6" {...props} />
           ),
         }}
       >
