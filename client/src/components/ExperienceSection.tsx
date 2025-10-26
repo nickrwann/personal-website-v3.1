@@ -13,7 +13,7 @@ interface ExperienceSectionProps {
 
 export function ExperienceSection({ experiences, content }: ExperienceSectionProps) {
   return (
-    <section className="mb-12" data-testid="section-experience">
+    <section data-testid="section-experience">
       <h2 className="text-2xl font-semibold text-foreground mb-6">Experience</h2>
       <div className="text-sm leading-relaxed text-foreground whitespace-pre-line">
         {content}

@@ -75,9 +75,15 @@ export default function Home() {
         </div>
         <div className="max-w-3xl mx-auto px-4 py-12 pb-12">
           <HeroSection />
-          <AboutSection content={streamedAbout} />
-          <ExperienceSection experiences={experiences} content={streamedExperiences} />
-          <div ref={contentEndRef} />
+          
+          <div className="w-full overflow-x-auto mb-12" data-testid="container-portfolio-content">
+            <div className="space-y-12">
+              <AboutSection content={streamedAbout} />
+              <ExperienceSection experiences={experiences} content={streamedExperiences} />
+            </div>
+            <div ref={contentEndRef} />
+          </div>
+
           <QASection />
         </div>
       </div>
