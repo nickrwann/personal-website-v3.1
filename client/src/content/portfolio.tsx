@@ -1,6 +1,4 @@
-export const aboutContent = `I'm an AI engineer with 5+ years of experience and 20+ patents. 
-I specialize in learning new technologies quickly and applying them to solve real problems. 
-I focus on building reliable, scalable systems that move from prototype to product without losing clarity or purpose. 
+export const aboutContent = `I'm an AI engineer with 5+ years of experience and 20+ patents, specialized in learning new technologies quickly and applying them to solve high value business problems. I focus on building reliable, scalable systems that move from prototype to product without losing clarity or purpose. 
 
 When I'm not working, you can usually find me exploring the city, traveling, working out, or hunting down the best latte in town.`;
 
@@ -13,9 +11,7 @@ export const experiences = [
     company: 'Dell Technologies',
     period: '2023 – Present',
     description: `Focus on AI systems, distributed services, and internal enablement tools. 
-I've worked across MLOps pipelines, model optimization with ONNX Runtime, and agentic systems that automate complex workloads. 
-My work has centered on RAG and multi-agent platforms that help teams use AI more effectively. 
-Along the way, I've contributed to over 20 patents in AI and systems design.`,
+I've worked across MLOps pipelines, model optimization with ONNX Runtime, and agentic systems that automate complex workloads. My work has centered on RAG and multi-agent platforms that help teams use AI more effectively. Along the way, I've contributed to over 20 patents in AI and systems design.`,
   },
   {
     id: '2',
@@ -64,8 +60,7 @@ Along the way, I've contributed to over 20 patents in AI and systems design.`,
     role: 'Data Science Intern',
     company: 'ThoughtTrace',
     period: '2018',
-    description: `Helped automate the training and validation process for classification models used on oil and gas lease documents. 
-Focused on improving dataset quality and retraining efficiency.`,
+    description: `Helped automate the training and validation process for classification models used on oil and gas lease documents. Focused on improving dataset quality and retraining efficiency.`,
   },
   {
     id: '5',
