@@ -43,6 +43,9 @@ Preferred communication style: Simple, everyday language.
 - **Responsive Layout**: Mobile-first approach with adaptive subtitle (single line on desktop, 3 centered lines on mobile)
 - **Fixed Chrome Elements**: NW badge and theme toggle remain visible while scrolling
 - **Incremental Content Reveal**: About section streams first (character-by-character), then Experience items appear sequentially with character-by-character description streaming for each one
+  - String descriptions stream with inline cursor
+  - JSX descriptions (with links/formatting) display immediately without streaming
+  - Uses null vs empty string distinction: `streamedDescription === null` means use original (completed/JSX), `streamedDescription === ''` means streaming started but no characters yet
 
 **ChatGPT-Style Chat Interface**:
 - **In-Flow Input Bar**: Chat input positioned in page flow (not fixed) with clean one-container design
