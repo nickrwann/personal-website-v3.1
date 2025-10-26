@@ -86,7 +86,6 @@ export function QASection() {
 
   const handleSuggestionClick = (text: string) => {
     setInputValue(text);
-    setIsInputFocused(true);
     handleSend(text);
   };
 
@@ -122,16 +121,14 @@ export function QASection() {
       {/* Sentinel element for IntersectionObserver - marks end of content stream */}
       <div id="qa-sentinel" className="h-4" data-testid="sentinel-qa" />
 
-      {/* Contextual suggestions - only visible when at bottom and not typing/focused */}
-      {!userQuestion && (
-        <ContextualSuggestions
-          onSuggestionClick={handleSuggestionClick}
-          disabled={isAsking}
-          isInputFocused={isInputFocused}
-          isTyping={isTyping}
-          sentinelId="qa-sentinel"
-        />
-      )}
+      {/* Contextual suggestions - visibility controlled by internal logic */}
+      <ContextualSuggestions
+        onSuggestionClick={handleSuggestionClick}
+        disabled={isAsking}
+        isInputFocused={isInputFocused}
+        isTyping={isTyping}
+        sentinelId="qa-sentinel"
+      />
 
       {/* Chat input bar */}
       <ChatInput
