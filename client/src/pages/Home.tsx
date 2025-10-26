@@ -124,7 +124,12 @@ export default function Home() {
             data-testid="container-stream"
           >
             <div className="space-y-12">
-              {streamedAbout && <AboutSection content={streamedAbout} />}
+              {streamedAbout && (
+                <AboutSection 
+                  content={streamedAbout} 
+                  isStreaming={isStreaming && streamedAbout.length < aboutContent.length}
+                />
+              )}
               {visibleExperienceCount > 0 && (
                 <ExperienceSection 
                   experiences={visibleExperiences} 
@@ -132,13 +137,6 @@ export default function Home() {
                 />
               )}
             </div>
-            
-            {/* Keep the fantastic pulsing cursor during streaming */}
-            {isStreaming && (
-              <div className="flex items-center gap-2 mt-4 text-muted-foreground">
-                <div className="w-1 h-4 bg-primary animate-pulse" />
-              </div>
-            )}
           </div>
 
           {/* Q&A section fades in after streaming completes */}
