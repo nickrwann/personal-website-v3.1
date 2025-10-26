@@ -27,6 +27,7 @@ export function ContextualSuggestions({
     if (!sentinel) return;
 
     // Create IntersectionObserver to detect when user is at bottom
+    // Use negative rootMargin to require user to be very close to bottom
     observerRef.current = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
@@ -34,7 +35,7 @@ export function ContextualSuggestions({
       },
       {
         root: null,
-        rootMargin: "0px",
+        rootMargin: "-100px 0px 0px 0px", // Require sentinel to be 100px into viewport
         threshold: 0.1,
       }
     );

@@ -38,20 +38,33 @@ Preferred communication style: Simple, everyday language.
 - **Incremental Content Reveal**: About section streams first, then Experience items appear sequentially with fade-in animations
 
 **ChatGPT-Style Chat Interface**:
-- **Fixed Input Bar**: Pinned to bottom of viewport using `position: fixed` with safe-area insets
+- **In-Flow Input Bar**: Chat input positioned in page flow (not fixed) with clean one-container design
+  - All elements in single rounded container: refresh icon, plus button, textarea, character counter, mic icon (hidden on mobile), send button
+  - Subtle border and background, not blocky or loud
+  - No individual white boxes for inner elements
 - **Auto-Expanding Textarea**: Input expands vertically as user types (max 200px height), adds scrollbar when exceeded
-- **Visual Viewport API**: Mobile keyboard handling - input bar rises above keyboard automatically
+  - Starts at one line, grows smoothly without layout jumps
+  - Character counter (0/250) in bottom-right
+  - Enter to send, Shift+Enter for new line
+- **Visual Viewport API**: Mobile keyboard handling - input bar lifts above keyboard automatically
   - Detects keyboard height: `window.innerHeight - visualViewport.height`
-  - Applies bottom offset dynamically with smooth transitions
+  - Applies `translateY()` transform to lift bar above keyboard
+  - Smooth 0.2s ease-out transitions
   - No scroll hacks or artificial padding
 - **Contextual Prompt Suggestions**: 
-  - Uses IntersectionObserver on sentinel element to detect when user is at bottom
-  - Pills fade in only when: (1) at bottom, (2) content fully streamed, (3) input not focused
-  - Smooth fade-in/fade-out animations
-  - Fixed position between content and input bar
-  - Clicking suggestion populates and focuses input instantly
-- **Content Scrolls Behind**: Main content area scrolls naturally behind fixed input bar
-- **Minimal Bottom Padding**: Only enough for visual breathing room (pb-24 = 96px), no excessive whitespace
+  - Uses IntersectionObserver with strict -100px rootMargin for accurate bottom detection
+  - Pills visible only when: (1) at bottom (sentinel 100px+ into viewport), (2) input not focused, (3) not typing
+  - No outer box container - just pills with subtle borders and rounded corners
+  - Pills wrap to multiple lines on mobile with proper spacing
+  - Smooth fade and slide animations (300ms ease-in-out)
+  - Clicking suggestion populates textarea and sends message
+  - Pills reappear after conversations when scrolled back to bottom
+- **Responsive Design**: 
+  - Mic icon hidden on screens < 640px (sm breakpoint)
+  - Icons never wrap to second row
+  - Readable font sizes maintained on all screen sizes
+  - Textarea prioritized for horizontal space
+- **Theme Support**: All components work correctly in both light and dark mode with proper contrast
 
 ### Backend Architecture
 
