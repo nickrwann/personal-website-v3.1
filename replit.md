@@ -50,10 +50,13 @@ Preferred communication style: Simple, everyday language.
 
 **ChatGPT-Style Chat Interface**:
 - **In-Flow Input Bar**: Chat input positioned in page flow (not fixed) with clean one-container design
-  - All elements in single rounded container: refresh icon, plus button, textarea, character counter, mic icon (hidden on mobile), send button
+  - Layout: refresh icon → textarea → character counter → send button (all vertically centered)
+  - Removed mic and plus buttons for cleaner, more focused design
   - Refresh button resets chat state without page reload (clears Q&A, restores suggestions)
+  - Character counter positioned inline (not absolute) for better balance
+  - Send button with perfectly centered paper airplane icon
+  - Tight bottom padding (pb-6) makes input bar feel like page footer
   - Subtle border and background, not blocky or loud
-  - No individual white boxes for inner elements
 - **Auto-Expanding Textarea**: Input expands vertically as user types (max 200px height), adds scrollbar when exceeded
   - Starts at one line, grows smoothly without layout jumps
   - Character counter (0/250) in bottom-right
@@ -64,8 +67,9 @@ Preferred communication style: Simple, everyday language.
   - 50px threshold ensures only real keyboard events trigger movement
   - Applies `translateY()` transform to lift bar above keyboard
   - Smooth 0.2s ease-out transitions
-  - Bar stays anchored above keyboard until dismissed
-  - No scroll hacks or artificial padding
+  - Bar stays anchored above keyboard while typing (no unintended dismissal)
+  - Deliberate scroll-up >100px dismisses keyboard (150ms debounce prevents OS micro-scroll triggers)
+  - No auto-scroll of page content when focusing input
 - **Contextual Prompt Suggestions**: 
   - Uses IntersectionObserver with strict -100px rootMargin for accurate bottom detection
   - Pills stay visible while user types - only hide after message is sent
