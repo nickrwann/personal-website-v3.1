@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { flushSync } from "react-dom";
 import { NWBadge } from "@/components/NWBadge";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { HeroSection } from "@/components/HeroSection";
@@ -12,6 +13,7 @@ export default function Home() {
   const [streamedExperiences, setStreamedExperiences] = useState("");
   const [isStreaming, setIsStreaming] = useState(true);
   const contentEndRef = useRef<HTMLDivElement>(null);
+  const hasStreamedRef = useRef(false);
 
   useEffect(() => {
     if (isStreaming && contentEndRef.current) {
@@ -20,32 +22,48 @@ export default function Home() {
   }, [streamedAbout, streamedExperiences, isStreaming]);
 
   useEffect(() => {
-    setStreamedAbout("");
-    setStreamedExperiences("");
-    setIsStreaming(true);
+    if (hasStreamedRef.current) return;
+    hasStreamedRef.current = true;
 
+    console.log("Starting content stream...");
+    
     const fullContent = aboutContent + "\n\n" + experiencesIntro;
     let index = 0;
-    const charsPerInterval = 5;
-    const intervalMs = 20;
+    const charsPerInterval = 8;
+    const intervalMs = 30;
+    let timeoutId: NodeJS.Timeout;
 
-    const interval = setInterval(() => {
+    const streamNext = () => {
       if (index < aboutContent.length) {
-        setStreamedAbout(aboutContent.slice(0, index + charsPerInterval));
+        const newContent = aboutContent.slice(0, index + charsPerInterval);
+        flushSync(() => {
+          setStreamedAbout(newContent);
+        });
         index += charsPerInterval;
+        timeoutId = setTimeout(streamNext, intervalMs);
       } else if (index < fullContent.length) {
-        setStreamedAbout(aboutContent);
-        setStreamedExperiences(experiencesIntro.slice(0, index - aboutContent.length + charsPerInterval));
+        flushSync(() => {
+          setStreamedAbout(aboutContent);
+          setStreamedExperiences(experiencesIntro.slice(0, index - aboutContent.length + charsPerInterval));
+        });
         index += charsPerInterval;
+        timeoutId = setTimeout(streamNext, intervalMs);
       } else {
-        clearInterval(interval);
-        setStreamedAbout(aboutContent);
-        setStreamedExperiences(experiencesIntro);
-        setIsStreaming(false);
+        console.log("Stream complete");
+        flushSync(() => {
+          setStreamedAbout(aboutContent);
+          setStreamedExperiences(experiencesIntro);
+          setIsStreaming(false);
+        });
       }
-    }, intervalMs);
+    };
 
-    return () => clearInterval(interval);
+    timeoutId = setTimeout(streamNext, intervalMs);
+
+    return () => {
+      console.log("Cleaning up timeout");
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   return (
