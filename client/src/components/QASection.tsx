@@ -28,6 +28,7 @@ export const QASection = forwardRef<ChatInputRef>((props, ref) => {
       }
     }, intervalMs);
 
+    // Return cleanup function
     return () => clearInterval(interval);
   };
 
