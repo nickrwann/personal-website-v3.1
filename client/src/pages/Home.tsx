@@ -14,58 +14,29 @@ export default function Home() {
   const [visibleExperienceCount, setVisibleExperienceCount] = useState(0);
   const [isStreaming, setIsStreaming] = useState(true);
   const [showScrollButton, setShowScrollButton] = useState(false);
-  const [userHasScrolledUp, setUserHasScrolledUp] = useState(false);
   
   const streamContainerRef = useRef<HTMLDivElement>(null);
-  const contentEndRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<ChatInputRef>(null);
   const hasStreamedRef = useRef(false);
-  const lastScrollTopRef = useRef(0);
 
-  // Check if user is at bottom using IntersectionObserver
+  // Watch sentinel element to show/hide scroll button
   useEffect(() => {
-    if (!contentEndRef.current) return;
+    if (!sentinelRef.current) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        const isAtBottom = entry.isIntersecting;
-        setShowScrollButton(!isAtBottom && isStreaming);
-        
-        if (isAtBottom) {
-          setUserHasScrolledUp(false);
-        }
+        // Show button when sentinel is NOT in view (content extends beyond viewport)
+        // Hide button when sentinel IS in view (at bottom)
+        setShowScrollButton(!entry.isIntersecting);
       },
       { threshold: 0.1 }
     );
 
-    observer.observe(contentEndRef.current);
+    observer.observe(sentinelRef.current);
 
     return () => observer.disconnect();
-  }, [isStreaming]);
-
-  // Track user scroll direction
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollTop = window.scrollY || document.documentElement.scrollTop;
-      
-      if (currentScrollTop < lastScrollTopRef.current && isStreaming) {
-        // User scrolled up during streaming
-        setUserHasScrolledUp(true);
-      }
-      
-      lastScrollTopRef.current = currentScrollTop;
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isStreaming]);
-
-  // Auto-scroll only if user hasn't scrolled up
-  useEffect(() => {
-    if (isStreaming && !userHasScrolledUp && contentEndRef.current) {
-      contentEndRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    }
-  }, [streamedAbout, visibleExperienceCount, isStreaming, userHasScrolledUp]);
+  }, []);
 
   // ChatGPT-like streaming with natural pacing
   useEffect(() => {
@@ -104,7 +75,6 @@ export default function Home() {
       } else {
         // All content complete
         setIsStreaming(false);
-        setShowScrollButton(false);
         
         // Auto-focus chat input after streaming completes
         setTimeout(() => {
@@ -122,8 +92,7 @@ export default function Home() {
   }, []);
 
   const handleScrollToBottom = () => {
-    contentEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-    setUserHasScrolledUp(false);
+    document.getElementById('stream-end')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const visibleExperiences = experiences.slice(0, visibleExperienceCount);
@@ -154,7 +123,6 @@ export default function Home() {
                 />
               )}
             </div>
-            <div ref={contentEndRef} />
             
             {/* Keep the fantastic pulsing cursor during streaming */}
             {isStreaming && (
@@ -170,6 +138,9 @@ export default function Home() {
               <QASection ref={chatInputRef} />
             </div>
           )}
+          
+          {/* Sentinel element for scroll button visibility detection */}
+          <div id="stream-end" ref={sentinelRef} />
         </div>
         
         {/* ChatGPT-style scroll-to-bottom button */}

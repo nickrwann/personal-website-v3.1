@@ -7,10 +7,12 @@ interface ScrollToBottomButtonProps {
 }
 
 export function ScrollToBottomButton({ onClick, show }: ScrollToBottomButtonProps) {
-  if (!show) return null;
-
   return (
-    <div className="fixed bottom-24 right-6 z-40 animate-in fade-in slide-in-from-bottom-2 duration-200">
+    <div 
+      className={`fixed bottom-24 left-1/2 -translate-x-1/2 z-40 transition-opacity duration-300 ${
+        show ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      }`}
+    >
       <Button
         size="icon"
         variant="outline"
