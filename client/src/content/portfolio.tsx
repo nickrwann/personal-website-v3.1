@@ -2,6 +2,24 @@ export const aboutContent = `I'm an software engineer with 5+ years of experienc
 
 When I'm not working, you can usually find me exploring the city, traveling, working out, or hunting down the best latte in town.`;
 
+export const socialLinks = [
+  {
+    platform: 'github' as const,
+    url: 'https://github.com/nickrwann',
+    label: 'GitHub Profile',
+  },
+  {
+    platform: 'linkedin' as const,
+    url: 'https://www.linkedin.com/in/nick-wanner/',
+    label: 'LinkedIn Profile',
+  },
+  {
+    platform: 'instagram' as const,
+    url: 'https://www.instagram.com/_nickwinner_/?igsh=dzFjemdhdm1hczdo&utm_source=qr#',
+    label: 'Instagram Profile',
+  },
+];
+
 export const experiencesIntro = "";
 
 export const experiences = [
