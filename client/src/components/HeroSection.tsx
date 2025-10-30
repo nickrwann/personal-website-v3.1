@@ -17,7 +17,7 @@ export function HeroSection() {
       
       {/* Large screens: one line */}
       <p className="hidden md:block text-lg md:text-xl text-muted-foreground mb-6 px-4 whitespace-nowrap" data-testid="text-subtitle">
-        AI Systems Engineer & Creative Problem Solver
+        Software Engineer & Creative Problem Solver
       </p>
       
       {/* Small screens: three lines */}
