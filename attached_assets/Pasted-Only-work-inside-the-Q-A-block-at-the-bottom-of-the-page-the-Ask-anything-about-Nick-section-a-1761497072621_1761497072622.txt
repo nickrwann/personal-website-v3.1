@@ -1,0 +1,138 @@
+Only work inside the Q&A block at the bottom of the page (the "Ask anything about Nick..." section and the example question pills). Do not restructure or restyle the rest of the page at all.
+
+The goal is to make this Q&A block act like a high quality mobile chat composer, but this is still just a single question and answer. There is no chat transcript and you must not add one.
+
+Use these rules:
+
+1. Overall structure
+
+   * The Q&A block consists of two parts stacked vertically as a single unit:
+
+     1. Suggestion pills (the example questions like "Why should I hire Nick?")
+     2. The input row (refresh icon, text area, counter, send button)
+   * The pills sit directly above the input row, not beside it, not below it.
+   * These two parts together form my "composer" at the bottom of the page.
+   * This whole composer sits visually like a footer at the end of the page content.
+   * Do not create a scrolling chat log. Do not move or wrap my About Me or Experience sections.
+
+2. Visual style of the composer
+
+   * The composer should look like a single rounded card / bubble with a subtle border and subtle background (match my dark and light themes).
+   * Inside that rounded card:
+
+     * The top section is the vertically stacked pills.
+     * The bottom section is the input row.
+   * Large radius corners similar to ChatGPT mobile.
+   * Respect safe-area padding at the bottom on iPhone using env(safe-area-inset-bottom) so it never sits under the home bar.
+   * There must not be a giant empty gap below the composer. It should feel anchored to the bottom of the page content.
+
+3. Suggestion pills
+
+   * All suggestion pills should appear in a vertical stack above the input row.
+   * Each pill should be full width to match each other in height and length. The width for every pill should be the width of the longest pill string, so all pills have a consistent chip size.
+   * That means:
+
+     * All pills have the same horizontal padding and same max width.
+     * Shorter text pills still render in a pill that matches the longest pill's width, so visually they are uniform.
+   * The pills should be easy to tap on mobile.
+   * The pills should remain visible until the user actually submits a question.
+   * The pills should NOT hide just because the textarea is focused.
+   * After sending a question, hide all the pills.
+   * If the user taps the refresh/reset icon, reset the state of this Q&A block: clear the asked question and answer, and restore the pills.
+   * When a pill is tapped:
+
+     * Populate the textarea with that pill text.
+     * Focus the textarea.
+
+4. Input row
+
+   * The input row is a single horizontal row inside the same rounded card, directly under the pills.
+   * Order from left to right:
+
+     * Refresh / reset icon
+     * Text area with placeholder "Ask anything about Nick..."
+     * Character counter (0/250)
+     * Send button, which is the paper airplane in a circular button
+   * Remove the plus button, remove the mic button. They should not exist.
+   * All elements must be vertically aligned on the same baseline.
+   * The send icon must be optically centered inside its circular button.
+   * The character counter should sit just to the left of the send button, aligned so the row looks balanced on mobile and desktop. You can adjust spacing and font size for the counter so it does not crowd.
+   * The refresh icon should NOT reload the page. It should only reset this Q&A component.
+
+   Text area behavior:
+
+   * Use a textarea, not a single line input.
+   * It should start at one line tall and auto expand as I type, up to around 200px max height.
+   * After it hits max height, the textarea should scroll internally.
+   * Placeholder and typed text should wrap naturally. Do not let icons wrap to a second line. Do not let icons get pushed off screen. Text stays readable.
+   * Normal readable font size. Do not shrink the text to fit.
+
+5. Mobile keyboard behavior
+
+   * When I tap into the textarea on mobile and the keyboard opens:
+
+     * The entire composer (pills plus input row, as one block) should lift up and sit directly above the keyboard.
+     * It should stay there while I'm typing. No jumping around. No snapping to the top of the viewport.
+   * When the keyboard is closed, the composer should return to its resting position at the bottom of the page content.
+   * This lift behavior should be implemented using `window.visualViewport`:
+
+     * Compute `keyboardHeight = window.innerHeight - visualViewport.height`.
+     * If `keyboardHeight > 0`, apply a `translateY(-${keyboardHeight}px)` (or equivalent bottom offset) to the entire composer block.
+     * If `keyboardHeight === 0`, remove that transform so the composer sits back at the bottom.
+   * Do not force-scroll the entire page upward. Only translate the composer.
+   * While focused, the pills should still be visible above the input row (this is different from ChatGPT, and it is intentional).
+
+6. Scroll to dismiss keyboard
+
+   * If the keyboard is open and I start scrolling the page upward:
+
+     * Blur the textarea programmatically so the mobile keyboard dismisses.
+     * After blur, the composer should drop back down to the bottom of the page content with no leftover transform.
+   * The composer should not follow my finger while I scroll. It has only two positions:
+
+     * docked at the bottom of the page
+     * lifted above the keyboard
+
+7. Sending a question
+
+   * When I hit send:
+
+     * Call the existing ask endpoint.
+     * Begin streaming the answer at 1 character per 10 ms with the blinking inline cursor. Keep that logic as-is.
+     * Hide the pills once the question is sent.
+     * The composer should return to the docked position unless I immediately refocus.
+   * If the backend rate limits or errors, the UI must not explode or reset the whole page. The composer stays mounted and interactive.
+
+8. Reset / refresh behavior
+
+   * When I tap the refresh icon:
+
+     * Clear any current question text in the textarea.
+     * Clear the current streamed answer (from this Q&A flow only).
+     * Bring the pills back in their stacked form.
+     * Composer should go back to the docked bottom position.
+     * Do not reload the page.
+
+9. Desktop behavior
+
+   * On desktop, the composer just sits after the Experience section at the bottom of the page content.
+   * The pills are still stacked above the input row.
+   * The same rounded card styling applies.
+   * Do not fix it to the viewport on desktop.
+
+10. Final polish rules
+
+* The pills above the input row must all have identical width and height based on the longest pill text so they read as a neat vertical list of prompts.
+* The character counter and send button should never overlap or wrap.
+* The refresh icon, textarea baseline, counter, and send button must look visually aligned.
+* The whole thing should feel like a single, intentional module at the bottom of the page.
+
+Deliverables
+
+* Refactor only the Q&A block at the bottom of the page to match everything above.
+* Stack the pills vertically above the input row inside one rounded, bordered, padded card.
+* Implement the mobile keyboard lift using visualViewport and translateY on that single card.
+* Implement blur-on-scroll to dismiss the keyboard and return the card to the bottom.
+* Keep the 1 char per 10 ms streaming speed for the answer after send.
+* Add the reset icon behavior described above.
+* Make sure the card is stable, not jumpy, and matches the alignment, padding, and visual feel in the screenshots I provided.

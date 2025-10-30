@@ -1,24 +1,6 @@
-export const aboutContent = `I'm an software engineer with 5+ years of experience and 20+ patents, specialized in learning new technologies quickly and applying them to solve high value business problems. I focus on building reliable, scalable systems that move from prototype to product without losing clarity or purpose. 
+export const aboutContent = `I'm an AI engineer with 5+ years of experience and 20+ patents, specialized in learning new technologies quickly and applying them to solve high value business problems. I focus on building reliable, scalable systems that move from prototype to product without losing clarity or purpose. 
 
 When I'm not working, you can usually find me exploring the city, traveling, working out, or hunting down the best latte in town.`;
-
-export const socialLinks = [
-  {
-    platform: 'github' as const,
-    url: 'https://github.com/nickrwann',
-    label: 'GitHub Profile',
-  },
-  {
-    platform: 'linkedin' as const,
-    url: 'https://www.linkedin.com/in/nick-wanner/',
-    label: 'LinkedIn Profile',
-  },
-  {
-    platform: 'instagram' as const,
-    url: 'https://www.instagram.com/_nickwinner_/?igsh=dzFjemdhdm1hczdo&utm_source=qr#',
-    label: 'Instagram Profile',
-  },
-];
 
 export const experiencesIntro = "";
 

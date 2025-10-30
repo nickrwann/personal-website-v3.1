@@ -1,0 +1,71 @@
+I need you to completely remove all auto-scrolling behavior during and after streaming. The system should never automatically scroll the viewport — only the user or the scroll-to-bottom button should control movement.
+
+Requirements
+
+1. Remove Auto Scrolling
+
+Disable all scrollIntoView, window.scrollTo, and similar logic that runs during streaming or at the end of it.
+
+The viewport must remain fixed unless the user manually scrolls or clicks the scroll-to-bottom button.
+
+The stream should happen passively in place — no forced scrolling whatsoever.
+
+2. Scroll Button Behavior
+
+Add (or fix) a circular down-arrow button centered horizontally at the bottom of the viewport (not pinned to the right).
+
+It should only appear when:
+
+There is content below the current viewport, regardless of streaming state.
+
+The user has scrolled up (even slightly).
+
+It should hide when:
+
+The user is already at the bottom.
+
+The content fits entirely within the viewport (no overflow).
+
+3. Scroll Button Interaction
+
+Clicking the button should smoothly scroll to the bottom of the page or container.
+
+The button should remain visible until the viewport reaches the bottom.
+
+Use a subtle fade-in / fade-out for visibility transitions to keep it elegant.
+
+It must not flicker or repeatedly appear/disappear while the stream grows.
+
+4. Implementation Details
+
+Use an IntersectionObserver (or equivalent) to track whether the bottom element is in view.
+
+When the bottom sentinel element (for example, #stream-end) is visible, hide the button.
+
+When it’s out of view, show the button.
+
+Do not tie this logic to the streaming lifecycle; it should work regardless of whether streaming is active or complete.
+
+Make sure the button layer sits above the rest of the UI (for example, z-index: 50+).
+
+5. Existing Elements
+
+Keep the pulsing cursor exactly as it is — do not modify or remove it.
+
+Keep all current streaming and content timing intact — just decouple scrolling logic from it.
+
+Expected Result
+
+When the site loads:
+
+The About Me and Experience sections stream normally.
+
+The viewport does not move.
+
+If the streamed content extends beyond the current view, a circular down-arrow button appears centered at the bottom.
+
+Clicking the button scrolls smoothly to the end of the stream.
+
+If I scroll up after streaming finishes, the button reappears.
+
+The button never flickers or vanishes prematurely.
