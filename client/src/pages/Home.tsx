@@ -158,7 +158,7 @@ export default function Home() {
             <ThemeToggle />
           </div>
         </div>
-        <div className="max-w-3xl mx-auto px-4 py-12 pb-6">
+        <div className="max-w-3xl mx-auto px-4 pt-20 md:pt-12 pb-6">
           <HeroSection />
           
           {/* Stream container for all content sections */}
