@@ -22,7 +22,7 @@ export function HeroSection() {
       
       {/* Small screens: three lines */}
       <div className="md:hidden text-lg text-muted-foreground mb-6 px-4 space-y-1" data-testid="text-subtitle-mobile">
-        <p className="text-center">AI Systems Engineer</p>
+        <p className="text-center">Software Engineer</p>
         <p className="text-center">&</p>
         <p className="text-center">Creative Problem Solver</p>
       </div>
