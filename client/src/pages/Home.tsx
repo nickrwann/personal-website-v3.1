@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { NWBadge } from "@/components/NWBadge";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { SocialLinks } from "@/components/SocialLinks";
 import { HeroSection } from "@/components/HeroSection";
 import { AboutSection } from "@/components/AboutSection";
 import { ExperienceSection } from "@/components/ExperienceSection";
 import { QASection } from "@/components/QASection";
 import { ScrollToBottomButton } from "@/components/ScrollToBottomButton";
-import { aboutContent, experiences } from "@/content/portfolio";
+import { aboutContent, experiences, socialLinks } from "@/content/portfolio";
 export default function Home() {
   const [streamedAbout, setStreamedAbout] = useState("");
   const [currentExperienceIndex, setCurrentExperienceIndex] = useState(-1);
@@ -150,8 +151,12 @@ export default function Home() {
     <>
       <div className="min-h-screen bg-background relative">
         <NWBadge />
-        <div className="fixed top-4 right-4 z-50">
-          <ThemeToggle />
+        <div className="fixed top-4 right-4 z-50 flex flex-col items-end gap-3">
+          <div className="flex items-center gap-3">
+            <SocialLinks links={socialLinks} />
+            <div className="w-px h-6 bg-border" />
+            <ThemeToggle />
+          </div>
         </div>
         <div className="max-w-3xl mx-auto px-4 py-12 pb-6">
           <HeroSection />
