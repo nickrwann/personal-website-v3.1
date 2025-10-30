@@ -1,4 +1,4 @@
-export const aboutContent = `I'm an AI engineer with 5+ years of experience and 20+ patents, specialized in learning new technologies quickly and applying them to solve high value business problems. I focus on building reliable, scalable systems that move from prototype to product without losing clarity or purpose. 
+export const aboutContent = `I'm an software engineer with 5+ years of experience and 20+ patents, specialized in learning new technologies quickly and applying them to solve high value business problems. I focus on building reliable, scalable systems that move from prototype to product without losing clarity or purpose. 
 
 When I'm not working, you can usually find me exploring the city, traveling, working out, or hunting down the best latte in town.`;
 
